@@ -506,7 +506,7 @@
           kernelPatches = [ ];
           systemConfig = laptopConfig;
           cpuCores = 4;
-          stateVersion = "21.05";
+          stateVersion = "23.05";
         };
 
         framework = host.mkHost {

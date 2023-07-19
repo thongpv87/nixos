@@ -1,11 +1,5 @@
-{
-  config,
-  pkgs,
-  lib,
-  modulesPath,
-  ...
-}: {
-  system.stateVersion = "20.09";
+{ config, pkgs, lib, modulesPath, ... }: {
+  system.stateVersion = "23.05";
 
   nix = {
     extraOptions = "experimental-features = nix-command flakes";
@@ -17,7 +11,7 @@
   };
 
   # Make this config a iso config
-  imports = ["${modulesPath}/installer/cd-dvd/iso-image.nix"];
+  imports = [ "${modulesPath}/installer/cd-dvd/iso-image.nix" ];
 
   networking.networkmanager.enable = true;
   isoImage.makeEfiBootable = true;
