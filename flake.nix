@@ -393,6 +393,13 @@
           laptop.enable = true;
           secrets.identityPaths = [ "" ];
           networking.interfaces = [ "enp0s31f6" ];
+
+          hardware.thinkpad-x1e2 = {
+            enable = true;
+            fancontrol = "manual";
+            undervolt = true;
+            cpuScaling = "acpi_cpufreq";
+          };
         }
       ];
 
@@ -498,14 +505,23 @@
       nixosConfigurations = {
         laptop = host.mkHost {
           name = "laptop";
-          kernelPackage = pkgs.linuxPackages;
-          initrdMods =
-            [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-          kernelMods = [ "kvm-intel" ];
-          kernelParams = [ ];
+          kernelPackage = lib.mkForce pkgs.linuxPackages_testing;
+          initrdMods = # lib.mkMerge
+            [
+              "xhci_pci"
+              "nvme"
+              "usb_storage"
+              "sd_mod"
+              "battery"
+              "thinkpad_acpi"
+              "i915"
+            ];
+          kernelMods = [ "kvm-intel" "acpi_call" "coretemp" ];
+          kernelParams =
+            [ "quiet" "msr.allow_writes=on" "cpuidle.governor=teo" ];
           kernelPatches = [ ];
           systemConfig = laptopConfig;
-          cpuCores = 4;
+          cpuCores = 12;
           stateVersion = "23.05";
         };
 

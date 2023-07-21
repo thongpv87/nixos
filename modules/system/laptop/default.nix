@@ -1,29 +1,20 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.laptop;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.jd.laptop;
 in {
   options.jd.laptop = {
     enable = mkOption {
-      description = "Whether to enable laptop settings. Also tags as laptop for user settings";
+      description =
+        "Whether to enable laptop settings. Also tags as laptop for user settings";
       type = types.bool;
       default = false;
     };
   };
 
   config = mkIf (cfg.enable) {
-    environment.systemPackages = with pkgs; [
-      acpid
-      powertop
-    ];
+    environment.systemPackages = with pkgs; [ acpid powertop ];
 
-    programs = {
-      light.enable = true;
-    };
+    programs = { light.enable = true; };
 
     systemd = {
       # Replace suspend mode with hybrid-sleep. So can do hybrid-sleep then hibernate
@@ -95,57 +86,54 @@ in {
         # Nix source: https://github.com/NixOS/nixpkgs/blob/nixos-21.05/nixos/modules/services/hardware/tlp.nix
         # TLP settings: https://linrunner.de/tlp/settings/index.html
         enable = true;
-        settings =
+        settings = {
+          SOUND_POWER_SAVE_ON_AC = 0;
+          SOUND_POWER_SAVE_ON_BAT = 1;
+          SOUND_POWER_SAVE_CONTROLLER = "Y";
+          # "DISK_APM_LEVEL_ON_AC" = "254 254";
+          # "DISK_APM_LEVEL_ON_BAT" = "128 128";
+          # "DISK_IOSCHED" = "mq-deadline mq-deadline";
+          # "SATA_LINKPWR_ON_AC" = "med_power_with_dipm max_performance";
+          # "SATA_LINKPWR_ON_BAT" = "min_power min_power";
+          MAX_LOST_WORK_SECS_ON_AC = 15;
+          MAX_LOST_WORK_SECS_ON_BAT = 60;
+          NMI_WATCHDOG = 0;
+          # WIFI_PWR_ON_AC = "off";
+          # WIFI_PWR_ON_BAT = "on";
+          # "WOL_DISABLE" = "Y";
+          CPU_SCALING_GOVERNOR_ON_AC = "powersave";
+          CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+          CPU_MIN_PERF_ON_AC = 0;
+          CPU_MAX_PERF_ON_AC = 100;
+          CPU_MIN_PERF_ON_BAT = 0;
+          CPU_MAX_PERF_ON_BAT = 70;
+          # "CPU_BOOST_ON_AC" = 1;
+          # "CPU_BOOST_ON_BAT" = 1;
+          SCHED_POWERSAVE_ON_AC = 0;
+          SCHED_POWERSAVE_ON_BAT = 1;
+          # "RESTORE_DEVICE_STATE_ON_STARTUP" = 0;
+          RUNTIME_PM_ON_AC = "auto";
+          RUNTIME_PM_ON_BAT = "auto";
+          PCIE_ASPM_ON_AC = "default";
+          PCIE_ASPM_ON_BAT = "powersupersave";
+          USB_AUTOSUSPEND = 0;
+        } // (if config.jd.framework.enable == true then
           {
-            "SOUND_POWER_SAVE_ON_AC" = 0;
-            "SOUND_POWER_SAVE_ON_BAT" = 1;
-            "SOUND_POWER_SAVE_CONTROLLER" = "Y";
-            "DISK_APM_LEVEL_ON_AC" = "254 254";
-            "DISK_APM_LEVEL_ON_BAT" = "128 128";
-            "DISK_IOSCHED" = "mq-deadline mq-deadline";
-            "SATA_LINKPWR_ON_AC" = "med_power_with_dipm max_performance";
-            "SATA_LINKPWR_ON_BAT" = "min_power min_power";
-            "MAX_LOST_WORK_SECS_ON_AC" = 15;
-            "MAX_LOST_WORK_SECS_ON_BAT" = 60;
-            "NMI_WATCHDOG" = 0;
-            "WIFI_PWR_ON_AC" = "off";
-            "WIFI_PWR_ON_BAT" = "on";
-            "WOL_DISABLE" = "Y";
-            "CPU_SCALING_GOVERNOR_ON_AC" = "powersave";
-            "CPU_SCALING_GOVERNOR_ON_BAT" = "powersave";
-            "CPU_MIN_PERF_ON_AC" = 0;
-            "CPU_MAX_PERF_ON_AC" = 100;
-            "CPU_MIN_PERF_ON_BAT" = 0;
-            "CPU_MAX_PERF_ON_BAT" = 50;
-            "CPU_BOOST_ON_AC" = 1;
-            "CPU_BOOST_ON_BAT" = 1;
-            "SCHED_POWERSAVE_ON_AC" = 0;
-            "SCHED_POWERSAVE_ON_BAT" = 1;
-            "RESTORE_DEVICE_STATE_ON_STARTUP" = 0;
-            "RUNTIME_PM_ON_AC" = "on";
-            "RUNTIME_PM_ON_BAT" = "auto";
-            "PCIE_ASPM_ON_AC" = "default";
-            "PCIE_ASPM_ON_BAT" = "powersupersave";
-            "USB_AUTOSUSPEND" = 0;
+            # "CPU_ENERGY_PERF_POLICY_ON_AC" = "performance";
+            # "CPU_ENERGY_PERF_POLICY_ON_BAT" = "power";
+            # "PLATFORM_PROFILE_ON_AC" = "performance";
+            # "PLATFORM_PROFILE_ON_BAT" = "power";
+            # "CPU_HWP_DYN_BOOST_ON_AC" = 1;
+            # "CPU_HWP_DYN_BOOST_ON_BAT" = 0;
+            # "INTEL_GPU_MIN_FREQ_ON_AC" = 100;
+            # "INTEL_GPU_MAX_FREQ_ON_AC" = 1300;
+            # "INTEL_GPU_BOOST_FREQ_ON_AC" = 1300;
+            # "INTEL_GPU_MIN_FREQ_ON_BAT" = 100;
+            # "INTEL_GPU_MAX_FREQ_ON_BAT" = 800;
+            # "INTEL_GPU_BOOST_FREQ_ON_BAT" = 1000;
           }
-          // (
-            if config.jd.framework.enable == true
-            then {
-              "CPU_ENERGY_PERF_POLICY_ON_AC" = "performance";
-              "CPU_ENERGY_PERF_POLICY_ON_BAT" = "power";
-              "PLATFORM_PROFILE_ON_AC" = "performance";
-              "PLATFORM_PROFILE_ON_BAT" = "power";
-              "CPU_HWP_DYN_BOOST_ON_AC" = 1;
-              "CPU_HWP_DYN_BOOST_ON_BAT" = 0;
-              "INTEL_GPU_MIN_FREQ_ON_AC" = 100;
-              "INTEL_GPU_MAX_FREQ_ON_AC" = 1300;
-              "INTEL_GPU_BOOST_FREQ_ON_AC" = 1300;
-              "INTEL_GPU_MIN_FREQ_ON_BAT" = 100;
-              "INTEL_GPU_MAX_FREQ_ON_BAT" = 800;
-              "INTEL_GPU_BOOST_FREQ_ON_BAT" = 1000;
-            }
-            else {}
-          );
+        else
+          { });
       };
     };
   };
