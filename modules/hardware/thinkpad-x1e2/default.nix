@@ -1,6 +1,19 @@
 { pkgs, config, lib, ... }:
 with lib;
-let cfg = config.jd.hardware.thinkpad-x1e2;
+let
+  cfg = config.jd.hardware.thinkpad-x1e2;
+  my-bamboo = pkgs.ibus-engines.bamboo.overrideAttrs (oldAttrs: {
+    version = "v0.8.1";
+    src = pkgs.fetchFromGitHub {
+      owner = "BambooEngine";
+      repo = "ibus-bamboo";
+      rev = "c0001c571d861298beb99463ef63816b17203791";
+      sha256 = "sha256-7qU3ieoRPfv50qM703hEw+LTSrhrzwyzCvP9TOLTiDs=";
+    };
+    buildInputs = oldAttrs.buildInputs ++ [ pkgs.glib pkgs.gtk3 ];
+  });
+
+  hybridVaApiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
 in {
   options.jd.hardware.thinkpad-x1e2 = {
     enable = mkOption {
@@ -22,6 +35,13 @@ in {
       default = "acpi_cpufreq";
     };
 
+    xorg = {
+      enable = mkEnableOption (mdDoc "Enable Xorg display server");
+      gpuMode = mkOption {
+        type = with types; enum [ "integrated" "hybrid" "NVIDIA" ];
+        default = "hybrid";
+      };
+    };
   };
 
   config = mkIf (cfg.enable) (mkMerge [
@@ -54,7 +74,7 @@ in {
       time.timeZone = mkForce "Asia/Ho_Chi_Minh";
       i18n.inputMethod = {
         enabled = "ibus"; # "fcitx";
-        ibus.engines = with pkgs.ibus-engines; [ bamboo ];
+        ibus.engines = with pkgs.ibus-engines; [ my-bamboo ];
 
         # fcitx.engines = [ pkgs.fcitx-engines.unikey ];
         # fcitx5.addons = [ pkgs.fcitx5-unikey ];
@@ -250,6 +270,84 @@ in {
         uncoreOffset = -70;
       };
     })
+
+    # dedicated GPU config
+    (mkIf cfg.xorg.enable (mkMerge [
+      {
+        nixpkgs.config.allowUnfree = true;
+        services.xserver = {
+          layout = "us";
+          libinput.enable = true;
+          xkbModel = "thinkpad";
+          xkbOptions = "caps:escape,altwin:prtsc_rwin";
+        };
+      }
+      (mkIf (cfg.xorg.gpuMode == "integrated") {
+        services.xserver = {
+          videoDrivers = [ "modesetting" ];
+          deviceSection = ''
+            Option "DRI" "3"
+            Option "TearFree" "true"
+          '';
+          enable = true;
+        };
+      })
+
+      (mkIf (cfg.xorg.gpuMode == "hybrid") {
+        environment.systemPackages = [ nvidia-offload ];
+
+        hardware = {
+          nvidia = {
+            powerManagement = {
+              enable = true;
+              finegrained = true;
+            };
+            nvidiaPersistenced = true;
+            modesetting.enable = true;
+            prime = {
+              offload.enable = true;
+              intelBusId = "PCI:0:2:0";
+              nvidiaBusId = "PCI:1:0:0";
+            };
+          };
+        };
+        services.xserver = {
+          enable = true;
+          videoDrivers = [ "nvidia" ];
+          deviceSection = ''
+            Option "DRI" "3"
+            Option "TearFree" "true"
+          '';
+          displayManager.sessionCommands = ''
+            xrandr --setprovideroutputsource NVIDIA-G0 modesetting
+          '';
+        };
+      })
+
+      (mkIf (cfg.xorg.gpuMode == "NVIDIA") {
+        hardware = {
+          nvidia = {
+            modesetting.enable = true;
+            prime = {
+              sync.enable = true;
+              intelBusId = "PCI:0:2:0";
+              nvidiaBusId = "PCI:1:0:0";
+            };
+          };
+        };
+
+        services.xserver = {
+          videoDrivers = [ "nvidia" ];
+          enable = true;
+          screenSection = ''
+            Option         "metamodes" "nvidia-auto-select +0+0 {ForceFullCompositionPipeline=On}"
+            Option         "AllowIndirectGLXProtocol" "off"
+            Option         "TripleBuffer" "on"
+          '';
+        };
+      })
+
+    ]))
 
   ]);
 }

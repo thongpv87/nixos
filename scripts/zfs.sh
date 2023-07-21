@@ -4,7 +4,8 @@ DISK=$1
 
 sgdisk --zap-all $DISK
 
-sgdisk -n 0:0:+512MiB -t 0:ef00 -c 0:boot $DISK
+sgdisk -n 0:0:+1GiB -t 0:ef00 -c 0:boot $DISK
+sgdisk -n 0:0:+20GiB -t 0:8200 -c 0:swap $DISK
 sgdisk -n 0:0:0 -t 0:8200 -c 0:zfs $DISK
 
 
@@ -15,18 +16,19 @@ answer=$(while ! head -c 1 | grep -i '[ny]' ;do true ;done )
 stty $old_stty_cfg
 if [ "answer" != "${answer#[Yy]}" ]; then
   BOOT=${DISK}p1
-  ZFS=${DISK}p2
+  ZFS=${DISK}p3
 else
   BOOT=${DISK}1
-  ZFS=${DISK}2
+  ZFS=${DISK}3
 fi
 
 mkfs.vfat -n BOOT $BOOT
 
 zpool create \
+  -f \
   -o ashift=12 \
   -o autotrim=on \
-  -R /mnt \
+  -R /tmp/mnt \
   -O canmount=off \
   -O mountpoint=none \
   -O acltype=posixacl \
@@ -68,11 +70,11 @@ zfs create -p -o canmount=on -o mountpoint=legacy rpool/backup/data
 
 
 install_jd() {
-  zfs create -p -o canmount=on -o mountpoint=legacy rpool/local/home/jd
-  zfs create -p -o canmount=on -o mountpoint=legacy rpool/persist/home/jd
-  zfs create -p -o canmount=on -o mountpoint=legacy rpool/backup/home/jd
+  zfs create -p -o canmount=on -o mountpoint=legacy rpool/local/home/thongpv87
+  zfs create -p -o canmount=on -o mountpoint=legacy rpool/persist/home/thongpv87
+  zfs create -p -o canmount=on -o mountpoint=legacy rpool/backup/home/thongpv87
 
-  zfs snapshot rpool/local/home/jd@blank
+  zfs snapshot rpool/local/home/thongpv87@blank
 }
 
 printf 'Make jd pool (y/n)? '
@@ -84,28 +86,28 @@ if [ "answer" != "${answer#[Yy]}" ]; then
   install_jd
 fi
 
-mount -t zfs rpool/local /mnt
+mount -t zfs rpool/local /tmp/mnt
 
-mkdir /mnt/boot
-mount $BOOT /mnt/boot
+mkdir /tmp/mnt/boot
+mount $BOOT /tmp/mnt/boot
 
-mkdir /mnt/home
-mount -t zfs rpool/local/home /mnt/home
+mkdir /tmp/mnt/home
+mount -t zfs rpool/local/home /tmp/mnt/home
 
-mkdir /mnt/root
-mount -t zfs rpool/local/root /mnt/root
+mkdir /tmp/mnt/root
+mount -t zfs rpool/local/root /tmp/mnt/root
 
-mkdir /mnt/nix
-mount -t zfs rpool/persist/nix /mnt/nix
+mkdir /tmp/mnt/nix
+mount -t zfs rpool/persist/nix /tmp/mnt/nix
 
-mkdir -p /mnt/persist/root
-mount -t zfs rpool/persist/root /mnt/persist/root
+mkdir -p /tmp/mnt/persist/root
+mount -t zfs rpool/persist/root /tmp/mnt/persist/root
 
-mkdir -p /mnt/persist/data
-mount -t zfs rpool/persist/data /mnt/persist/data
+mkdir -p /tmp/mnt/persist/data
+mount -t zfs rpool/persist/data /tmp/mnt/persist/data
 
-mkdir -p /mnt/backup/root
-mount -t zfs rpool/backup/root /mnt/backup/root
+mkdir -p /tmp/mnt/backup/root
+mount -t zfs rpool/backup/root /tmp/mnt/backup/root
 
-mkdir -p /mnt/backup/data
-mount -t zfs rpool/backup/data /mnt/backup/data
+mkdir -p /tmp/mnt/backup/data
+mount -t zfs rpool/backup/data /tmp/mnt/backup/data

@@ -1,11 +1,6 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.framework;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.jd.framework;
 in {
   options.jd.framework = {
     enable = mkOption {
@@ -33,7 +28,7 @@ in {
           interval = "weekly";
         };
 
-        fwupd. extraRemotes = ["lvfs-testing"];
+        fwupd.extraRemotes = [ "lvfs-testing" ];
 
         # https://community.frame.work/t/headphone-jack-intermittent-noise/5246/90
         acpid = {
@@ -41,11 +36,13 @@ in {
           handlers = {
             headphone-power-save-off = {
               event = "jack/headphone HEADPHONE plug";
-              action = "echo 0 >/sys/module/snd_hda_intel/parameters/power_save";
+              action =
+                "echo 0 >/sys/module/snd_hda_intel/parameters/power_save";
             };
             headphone-power-save-on = {
               event = "jack/headphone HEADPHONE unplug";
-              action = "echo 1 >/sys/module/snd_hda_intel/parameters/power_save";
+              action =
+                "echo 1 >/sys/module/snd_hda_intel/parameters/power_save";
             };
           };
         };
@@ -70,13 +67,11 @@ in {
         '';
       };
     }
-    (mkIf cfg.fprint.enable {
-      services.fprintd.enable = true;
-    })
+    (mkIf cfg.fprint.enable { services.fprintd.enable = true; })
     (mkIf (config.jd.graphical.enable) {
-      boot.initrd.kernelModules = ["i915"];
+      boot.initrd.kernelModules = [ "i915" ];
 
-      environment.defaultPackages = with pkgs; [intel-gpu-tools];
+      environment.defaultPackages = with pkgs; [ intel-gpu-tools ];
       hardware = {
         opengl = {
           enable = true;

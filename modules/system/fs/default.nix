@@ -1,17 +1,12 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.fs;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.jd.fs;
 in {
   options.jd.fs = {
     type = mkOption {
       description = "Type of boot. Default encrypted-efi";
       default = null;
-      type = types.enum ["encrypted-efi" "zfs" "zfs-v2"];
+      type = types.enum [ "encrypted-efi" "zfs" "zfs-v2" ];
     };
 
     hostId = mkOption {
@@ -40,7 +35,7 @@ in {
   config = let
     fsConfig = mkMerge [
       (mkIf (cfg.type == "encrypted-efi") {
-        environment.systemPackages = with pkgs; [e2fsprogs];
+        environment.systemPackages = with pkgs; [ e2fsprogs ];
         fileSystems."/" = {
           device = "/dev/disk/by-label/DECRYPTNIXROOT";
           fsType = "ext4";
@@ -51,18 +46,14 @@ in {
           fsType = "vfat";
         };
 
-        swapDevices = [
-          {device = "/dev/disk/by-label/DECRYPTNIXSWAP";}
-        ];
+        swapDevices = [{ device = "/dev/disk/by-label/DECRYPTNIXSWAP"; }];
 
         boot = {
           # plymouth.enable = true;
           initrd = {
             # systemd.enable = true;
             luks.devices = {
-              cryptkey = {
-                device = "/dev/disk/by-label/NIXKEY";
-              };
+              cryptkey = { device = "/dev/disk/by-label/NIXKEY"; };
 
               cryptroot = {
                 device = "/dev/disk/by-label/NIXROOT";
@@ -84,14 +75,14 @@ in {
       # https://florianfranke.dev/posts/2020/03/installing-nixos-with-encrypted-zfs-on-a-netcup.de-root-server/
       (mkIf (cfg.type == "zfs" || cfg.type == "zfs-v2") {
         boot = {
-          supportedFilesystems = ["zfs"];
-          kernelParams = ["nohibernate"];
+          supportedFilesystems = [ "zfs" ];
+          kernelParams = [ "nohibernate" ];
           zfs.requestEncryptionCredentials = true;
         };
 
         services.zfs.trim.enable = true;
         services.zfs.autoScrub.enable = true;
-        services.zfs.autoScrub.pools = ["rpool"];
+        services.zfs.autoScrub.pools = [ "rpool" ];
 
         networking.hostId = cfg.hostId;
 
@@ -107,15 +98,12 @@ in {
       })
       (mkIf (cfg.type == "zfs-v2") (mkMerge [
         {
-          jd.impermanence.rollbackDatasets = [
-            "rpool/local"
-            "rpool/local/root"
-            "rpool/local/home"
-          ];
+          jd.impermanence.rollbackDatasets =
+            [ "rpool/local" "rpool/local/root" "rpool/local/home" ];
 
           jd.impermanence.persistedDatasets = {
-            "root" = {};
-            "data" = {};
+            "root" = { };
+            "data" = { };
           };
 
           fileSystems."/" = {
@@ -167,34 +155,32 @@ in {
           };
         }
         (mkIf cfg.zfs.userPool {
-          fileSystems."/home/jd" = {
-            device = "rpool/local/home/jd";
+          fileSystems."/home/thongpv87" = {
+            device = "rpool/local/home/thongpv87";
             fsType = "zfs";
           };
 
-          fileSystems."/persist/home/jd" = {
-            device = "rpool/persist/home/jd";
+          fileSystems."/persist/home/thongpv87" = {
+            device = "rpool/persist/home/thongpv87";
             fsType = "zfs";
           };
 
-          fileSystems."/backup/home/jd" = {
-            device = "rpool/backup/home/jd";
+          fileSystems."/backup/home/thongpv87" = {
+            device = "rpool/backup/home/thongpv87";
             fsType = "zfs";
           };
         })
       ]))
       (mkIf (cfg.type == "zfs") {
-        jd.impermanence.rollbackDatasets = [
-          "rpool/local/root"
-          "rpool/local/home"
-        ];
+        jd.impermanence.rollbackDatasets =
+          [ "rpool/local/root" "rpool/local/home" ];
 
         jd.impermanence.persistedDatasets = {
           "root" = {
             persist = "/persist";
             backup = "/persist";
           };
-          "data" = {backup = "/persist/data";};
+          "data" = { backup = "/persist/data"; };
         };
 
         fileSystems."/" = {
@@ -232,6 +218,5 @@ in {
         };
       })
     ];
-  in
-    fsConfig;
+  in fsConfig;
 }

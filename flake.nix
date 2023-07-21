@@ -389,16 +389,24 @@
         defaultClientConfig
         {
           boot.type = "efi";
-          fs.type = "encrypted-efi";
+          fs = {
+            type = "zfs-v2";
+            hostId = "727a5ca8";
+          };
+
           laptop.enable = true;
           secrets.identityPaths = [ "" ];
-          networking.interfaces = [ "enp0s31f6" ];
+          networking.interfaces = [ "wlan0" ];
 
           hardware.thinkpad-x1e2 = {
             enable = true;
             fancontrol = "manual";
             undervolt = true;
             cpuScaling = "acpi_cpufreq";
+            xorg = {
+              enable = true;
+              gpuMode = "integrated";
+            };
           };
         }
       ];
@@ -504,18 +512,17 @@
 
       nixosConfigurations = {
         laptop = host.mkHost {
-          name = "laptop";
-          kernelPackage = lib.mkForce pkgs.linuxPackages_testing;
-          initrdMods = # lib.mkMerge
-            [
-              "xhci_pci"
-              "nvme"
-              "usb_storage"
-              "sd_mod"
-              "battery"
-              "thinkpad_acpi"
-              "i915"
-            ];
+          name = "thinkpad";
+          kernelPackage = lib.mkForce pkgs.linuxPackages;
+          initrdMods = [
+            "xhci_pci"
+            "nvme"
+            "usb_storage"
+            "sd_mod"
+            "battery"
+            "thinkpad_acpi"
+            "i915"
+          ];
           kernelMods = [ "kvm-intel" "acpi_call" "coretemp" ];
           kernelParams =
             [ "quiet" "msr.allow_writes=on" "cpuidle.governor=teo" ];
