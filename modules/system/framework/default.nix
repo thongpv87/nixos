@@ -1,8 +1,8 @@
 { pkgs, config, lib, ... }:
 with lib;
-let cfg = config.jd.framework;
+let cfg = config.thongpv87.framework;
 in {
-  options.jd.framework = {
+  options.thongpv87.framework = {
     enable = mkOption {
       description = "Enable framework options";
       type = types.bool;
@@ -68,7 +68,7 @@ in {
       };
     }
     (mkIf cfg.fprint.enable { services.fprintd.enable = true; })
-    (mkIf (config.jd.graphical.enable) {
+    (mkIf (config.thongpv87.graphical.enable) {
       boot.initrd.kernelModules = [ "i915" ];
 
       environment.defaultPackages = with pkgs; [ intel-gpu-tools ];

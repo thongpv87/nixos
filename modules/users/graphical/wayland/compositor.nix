@@ -1,29 +1,24 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.graphical.wayland;
+{ pkgs, config, lib, ... }:
+with lib;
+let
+  cfg = config.thongpv87.graphical.wayland;
   systemCfg = config.machineData.systemConfig;
   dwlJD = pkgs.dwlBuilder {
     config = {
-      input = {
-        natscroll = systemCfg ? laptop && systemCfg.laptop.enable;
-      };
+      input = { natscroll = systemCfg ? laptop && systemCfg.laptop.enable; };
       cmds = {
-        term = ["${pkgs.foot}/bin/foot"];
+        term = [ "${pkgs.foot}/bin/foot" ];
         menu = [
           "${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop"
           "--dmenu='${bemenuCmd}'"
           "--term='${pkgs.foot}/bin/foot'"
           "--no-generic"
         ];
-        quit = ["${wayExit}"];
-        audioup = ["${pkgs.scripts.soundTools}/bin/stools" "vol" "up" "5"];
-        audiodown = ["${pkgs.scripts.soundTools}/bin/stools" "vol" "down" "5"];
-        audiomut = ["${pkgs.scripts.soundTools}/bin/stools" "vol" "toggle"];
+        quit = [ "${wayExit}" ];
+        audioup = [ "${pkgs.scripts.soundTools}/bin/stools" "vol" "up" "5" ];
+        audiodown =
+          [ "${pkgs.scripts.soundTools}/bin/stools" "vol" "down" "5" ];
+        audiomut = [ "${pkgs.scripts.soundTools}/bin/stools" "vol" "toggle" ];
       };
     };
   };
@@ -134,28 +129,27 @@ with lib; let
       systemctl --user start dwl-session.target
       exec cp /dev/stdin /tmp/dwltags
     ''}
-    ${optionalString (isSway || isSwayDbg) "systemctl --user start sway-session.target"}
+    ${optionalString (isSway || isSwayDbg)
+    "systemctl --user start sway-session.target"}
   '';
 
   isSway = cfg.type == "sway";
   isSwayDbg = cfg.type == "sway-dbg";
   isDwl = cfg.type == "dwl";
 in {
-  options.jd.graphical.wayland = {
+  options.thongpv87.graphical.wayland = {
     type = mkOption {
-      type = types.enum ["dwl" "sway" "sway-dbg"];
+      type = types.enum [ "dwl" "sway" "sway-dbg" ];
       description = ''What desktop/wm to use. Options: "dwl", "sway"'';
     };
   };
 
   config = mkIf cfg.enable (mkMerge [
     {
-      assertions = [
-        {
-          assertion = systemCfg.graphical.wayland.enable;
-          message = "To enable wayland for user, it must be enabled for system";
-        }
-      ];
+      assertions = [{
+        assertion = systemCfg.graphical.wayland.enable;
+        message = "To enable wayland for user, it must be enabled for system";
+      }];
 
       home.file = {
         ".winitrc" = {
@@ -192,26 +186,26 @@ in {
       };
     }
     (mkIf (isSway || isSwayDbg) {
-      home.packages = [pkgs.sway];
+      home.packages = [ pkgs.sway ];
       xdg.configFile."sway/config".text = swayConfig;
 
       systemd.user.targets.sway-session = {
         Unit = {
           Description = "sway compositor session";
-          Documentation = ["man:systemd.special(7)"];
-          BindsTo = ["wayland-session.target"];
-          After = ["wayland-session.target"];
+          Documentation = [ "man:systemd.special(7)" ];
+          BindsTo = [ "wayland-session.target" ];
+          After = [ "wayland-session.target" ];
         };
       };
     })
     (mkIf isDwl {
-      home.packages = [dwlJD];
+      home.packages = [ dwlJD ];
       systemd.user.targets.dwl-session = {
         Unit = {
           Description = "dwl compositor session";
-          Documentation = ["man:systemd.special(7)"];
-          BindsTo = ["wayland-session.target"];
-          After = ["wayland-session.target"];
+          Documentation = [ "man:systemd.special(7)" ];
+          BindsTo = [ "wayland-session.target" ];
+          After = [ "wayland-session.target" ];
         };
       };
     })

@@ -1,13 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.ssh;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.ssh;
 in {
-  options.jd.ssh = {
+  options.thongpv87.ssh = {
     enable = mkOption {
       description = "enable ssh";
       type = types.bool;
@@ -24,9 +19,7 @@ in {
           user = "root";
           identityFile = "~/.ssh/local";
         };
-        "38.45.64.210" = {
-          forwardAgent = true;
-        };
+        "38.45.64.210" = { forwardAgent = true; };
       };
       extraConfig = ''
         AddKeysToAgent yes

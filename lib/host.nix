@@ -55,7 +55,7 @@ with utils; {
             (import ../modules/hardware { inherit inputs patchedPkgs; })
           ];
 
-          jd = systemConfigStripped;
+          thongpv87 = systemConfigStripped;
 
           services.qemuGuest.enable =
             lib.mkIf (optionIsTrue systemConfig qemuPath) true;

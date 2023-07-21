@@ -1,13 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.greetd;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.greetd;
 in {
-  options.jd.greetd.enable = mkOption {
+  options.thongpv87.greetd.enable = mkOption {
     description = "Enable greetd";
     default = false;
     type = types.bool;
@@ -51,21 +46,19 @@ in {
           };
 
           # First session is used by default
-          sessionDirs = builtins.concatStringsSep ":" (
-            (
-              if (config.jd.graphical.enable && config.jd.graphical.wayland.enable)
-              then [swaySession]
-              else []
-            )
-            ++ [zshSession]
-            ++ (
-              if (config.jd.graphical.enable && config.jd.graphical.xorg.enable)
-              then [xorgSession]
-              else []
-            )
-          );
+          sessionDirs = builtins.concatStringsSep ":"
+            ((if (config.thongpv87.graphical.enable
+              && config.thongpv87.graphical.wayland.enable) then
+              [ swaySession ]
+            else
+              [ ]) ++ [ zshSession ] ++ (if (config.thongpv87.graphical.enable
+                && config.thongpv87.graphical.xorg.enable) then
+                [ xorgSession ]
+              else
+                [ ]));
         in {
-          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --sessions ${sessionDirs} --remember --remember-user-session";
+          command =
+            "${pkgs.greetd.tuigreet}/bin/tuigreet --time --sessions ${sessionDirs} --remember --remember-user-session";
           user = "greeter";
         };
       };

@@ -1,11 +1,7 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.office365;
+{ pkgs, config, lib, ... }:
+with lib;
+let
+  cfg = config.thongpv87.office365;
   onedriveLauncher = pkgs.writeShellScriptBin "onedrive-launcher" ''
     if [ -f ${config.xdg.configHome}/onedrive-launcher ]
     then
@@ -18,7 +14,7 @@ with lib; let
     fi
   '';
 in {
-  options.jd.office365 = {
+  options.thongpv87.office365 = {
     enable = mkOption {
       description = "Enable office 365";
       type = types.bool;
@@ -50,27 +46,20 @@ in {
 
   config = mkIf (cfg.enable) {
     # onedrive from https://github.com/NixOS/nixpkgs/blob/nixos-21.05/nixos/modules/services/networking/onedrive.nix
-    home.packages =
-      (
-        if cfg.onedrive.enable
-        then [pkgs.onedrive]
-        else []
-      )
-      ++ (
-        if cfg.onedriver.enable
-        then [pkgs.jdpkgs.onedriverWrapper]
-        else []
-      );
+    home.packages = (if cfg.onedrive.enable then [ pkgs.onedrive ] else [ ])
+      ++ (if cfg.onedriver.enable then
+        [ pkgs.jdpkgs.onedriverWrapper ]
+      else
+        [ ]);
 
     systemd.user.services = {
       "onedrive@" = mkIf (cfg.onedrive.enable) {
-        Unit = {
-          Description = "Onedrive sync service";
-        };
+        Unit = { Description = "Onedrive sync service"; };
 
         Service = {
           Type = "simple";
-          ExecStart = "${pkgs.onedrive}/bin/onedrive --monitor \${XDG_CONFIG_HOME}/%i";
+          ExecStart =
+            "${pkgs.onedrive}/bin/onedrive --monitor \${XDG_CONFIG_HOME}/%i";
           Restart = "on-failure";
           RestartSec = 3;
           RestartPreventExitStatus = 3;
@@ -78,23 +67,20 @@ in {
       };
 
       onedriver-launcher = mkIf (cfg.onedriver.enable) {
-        Unit = {
-          Description = "onedrive file system mount service";
-        };
+        Unit = { Description = "onedrive file system mount service"; };
 
         Service = {
           Type = "simple";
-          ExecStart = "${pkgs.jdpkgs.onedriverWrapper}/bin/onedriverWrapper ${cfg.onedriver.mountpoint}";
+          ExecStart =
+            "${pkgs.jdpkgs.onedriverWrapper}/bin/onedriverWrapper ${cfg.onedriver.mountpoint}";
         };
 
-        Install = {
-          WantedBy = ["default.target"];
-        };
+        Install = { WantedBy = [ "default.target" ]; };
       };
     };
 
     home.activation = mkIf (cfg.onedriver.enable) {
-      onedriverMountpoint = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      onedriverMountpoint = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         $DRY_RUN_CMD mkdir -p ${cfg.onedriver.mountpoint}
       '';
     };

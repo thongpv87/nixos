@@ -1,14 +1,9 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
+{ pkgs, config, lib, ... }:
 # https://nixos.wiki/wiki/GNOME#Running_GNOME_programs_outside_of_GNOME
-with lib; let
-  cfg = config.jd.gnome;
+with lib;
+let cfg = config.thongpv87.gnome;
 in {
-  options.jd.gnome = {
+  options.thongpv87.gnome = {
     enable = mkOption {
       description = "Enable GNOME programs";
       type = types.bool;
@@ -31,9 +26,9 @@ in {
       services.gnome.at-spi2-core.enable = true;
     }
     (mkIf cfg.keyring.enable {
-      environment.systemPackages = [pkgs.libsecret];
+      environment.systemPackages = [ pkgs.libsecret ];
       services.gnome.gnome-keyring.enable = true;
-      services.dbus.packages = [pkgs.gnome.seahorse];
+      services.dbus.packages = [ pkgs.gnome.seahorse ];
     })
   ]);
 }

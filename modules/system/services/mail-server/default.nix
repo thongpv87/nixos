@@ -1,20 +1,12 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib; let
-  cfg = config.jd.mailserver;
+{ config, lib, pkgs, ... }:
+with lib;
+let
+  cfg = config.thongpv87.mailserver;
 
   friendlyName = name:
-    lib.strings.stringAsChars (x:
-      if x == "@"
-      then "_"
-      else x)
-    name;
+    lib.strings.stringAsChars (x: if x == "@" then "_" else x) name;
 
-  accountConf = {...}: {
+  accountConf = { ... }: {
     options = {
       hashedPasswordFile = mkOption {
         description = "The encrypted hashed password file";
@@ -22,20 +14,22 @@ with lib; let
       };
 
       aliases = mkOption {
-        description = "A list of aliases of this login account. Note: Use list entries like “@example.com” to create a catchAll that allows sending from all email addresses in these domain.";
+        description =
+          "A list of aliases of this login account. Note: Use list entries like “@example.com” to create a catchAll that allows sending from all email addresses in these domain.";
         type = with types; listOf str;
-        default = [];
+        default = [ ];
       };
 
       sendOnly = mkOption {
-        description = "Specifies if the account should be a send-only account. Emails sent to send-only accounts will be rejected from unauthorized senders with the sendOnlyRejectMessage stating the reason.";
+        description =
+          "Specifies if the account should be a send-only account. Emails sent to send-only accounts will be rejected from unauthorized senders with the sendOnlyRejectMessage stating the reason.";
         type = types.bool;
         default = false;
       };
     };
   };
 in {
-  options.jd.mailserver = {
+  options.thongpv87.mailserver = {
     enable = mkOption {
       description = "Enable mailserver";
       type = types.bool;
@@ -65,7 +59,8 @@ in {
     };
 
     indexDirectory = mkOption {
-      description = "Base directory to store the search indices. Don't need to be backed up";
+      description =
+        "Base directory to store the search indices. Don't need to be backed up";
       type = types.path;
       default = "/var/mailserver/index";
     };
@@ -77,32 +72,28 @@ in {
     };
 
     loginAccounts = mkOption {
-      description = "The login account of the domain. Every account is mapped to a unix user, e.g. user1@example.com.";
+      description =
+        "The login account of the domain. Every account is mapped to a unix user, e.g. user1@example.com.";
       type = with types; attrsOf (submodule accountConf);
     };
   };
 
   config = mkIf (cfg.enable) {
     age.secrets = with lib;
-      mapAttrs'
-      (name: value: (nameValuePair
-        "mailserver_pwd_${friendlyName name}"
-        {
+      mapAttrs' (name: value:
+        (nameValuePair "mailserver_pwd_${friendlyName name}" {
           file = value.hashedPasswordFile;
           path = "${cfg.decryptFolder}/${friendlyName name}";
           mode = "600";
-        }))
-      cfg.loginAccounts;
+        })) cfg.loginAccounts;
 
     security.acme = {
       acceptTerms = true;
-      defaults.email = config.jd.acme.email;
+      defaults.email = config.thongpv87.acme.email;
     };
 
     # https://serverfault.com/questions/1064046/how-do-i-prevent-the-spf-helo-none-warning-when-sending-from-postfix
-    services.postfix.config = {
-      smtp_helo_name = cfg.sendingFqdn;
-    };
+    services.postfix.config = { smtp_helo_name = cfg.sendingFqdn; };
 
     mailserver = {
       enable = true;
@@ -115,7 +106,7 @@ in {
       # record to point to the IP of the server. In particular port
       # 80 on the server will be opened
       certificateScheme = 3;
-      localDnsResolver = mkIf (config.jd.unbound.enable) false;
+      localDnsResolver = mkIf (config.thongpv87.unbound.enable) false;
 
       fullTextSearch.enable = false;
       openFirewall = true;
@@ -124,14 +115,11 @@ in {
       mailDirectory = cfg.mailDirectory;
       indexDir = cfg.indexDirectory;
 
-      loginAccounts =
-        builtins.mapAttrs
-        (name: value:
-          with value; {
-            hashedPasswordFile = "/etc/mailserver/${friendlyName name}";
-            inherit sendOnly aliases;
-          })
-        cfg.loginAccounts;
+      loginAccounts = builtins.mapAttrs (name: value:
+        with value; {
+          hashedPasswordFile = "/etc/mailserver/${friendlyName name}";
+          inherit sendOnly aliases;
+        }) cfg.loginAccounts;
     };
   };
 }

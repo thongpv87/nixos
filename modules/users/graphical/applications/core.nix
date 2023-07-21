@@ -1,14 +1,10 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.graphical;
+{ pkgs, config, lib, ... }:
+with lib;
+let
+  cfg = config.thongpv87.graphical;
   systemCfg = config.machineData.systemConfig;
 in {
-  options.jd.graphical.applications = {
+  options.thongpv87.graphical.applications = {
     enable = mkOption {
       type = types.bool;
       default = false;
@@ -59,8 +55,7 @@ in {
         cider
 
         # kdeconnect
-      ]
-      ++ lib.optional systemCfg.networking.wifi.enable pkgs.iwgtk;
+      ] ++ lib.optional systemCfg.networking.wifi.enable pkgs.iwgtk;
 
     xdg.configFile = {
       "discord/settings.json" = {

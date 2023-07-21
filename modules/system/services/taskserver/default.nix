@@ -1,13 +1,8 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib; let
-  cfg = config.jd.taskserver;
+{ config, lib, pkgs, ... }:
+with lib;
+let cfg = config.thongpv87.taskserver;
 in {
-  options.jd.taskserver = {
+  options.thongpv87.taskserver = {
     enable = mkOption {
       description = "Whether to enable miniflux";
       type = types.bool;
@@ -15,7 +10,7 @@ in {
     };
 
     firewall = mkOption {
-      type = types.enum ["world" "wg" "closed"];
+      type = types.enum [ "world" "wg" "closed" ];
       default = "closed";
       description = "Open firewall to everyone or wireguard";
     };
@@ -53,24 +48,18 @@ in {
           listenHost = cfg.address;
           listenPort = cfg.port;
           dataDir = cfg.dataDir;
-          organisations."people".users = [
-            "jd"
-          ];
+          organisations."people".users = [ "thongpv87" ];
         };
       };
     }
     (mkIf (cfg.firewall == "world") {
-      networking.firewall.allowedTCPPorts = [cfg.port];
+      networking.firewall.allowedTCPPorts = [ cfg.port ];
     })
-    (
-      let
-        wgconf = config.jd.wireguard;
-      in
-        mkIf
-        (cfg.firewall == "wg" && (assertMsg wgconf.enable "Wireguard must be enabled for wireguard ssh firewall"))
-        {
-          networking.firewall.interfaces.${wgconf.interface}.allowedTCPPorts = [cfg.port];
-        }
-    )
+    (let wgconf = config.thongpv87.wireguard;
+    in mkIf (cfg.firewall == "wg" && (assertMsg wgconf.enable
+      "Wireguard must be enabled for wireguard ssh firewall")) {
+        networking.firewall.interfaces.${wgconf.interface}.allowedTCPPorts =
+          [ cfg.port ];
+      })
   ]);
 }

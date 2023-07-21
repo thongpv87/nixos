@@ -1,13 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.applications.direnv;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.applications.direnv;
 in {
-  options.jd.applications.direnv = {
+  options.thongpv87.applications.direnv = {
     enable = mkOption {
       description = "Enable direnv";
       type = types.bool;
@@ -15,7 +10,7 @@ in {
     };
   };
 
-  config = mkIf (config.jd.applications.enable && cfg.enable) {
+  config = mkIf (config.thongpv87.applications.enable && cfg.enable) {
     programs.direnv = {
       enable = true;
       nix-direnv.enable = true;

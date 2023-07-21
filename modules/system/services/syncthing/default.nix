@@ -1,13 +1,8 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib; let
-  conf = config.jd.syncthing;
+{ config, lib, pkgs, ... }:
+with lib;
+let conf = config.thongpv87.syncthing;
 in {
-  options.jd.syncthing = {
+  options.thongpv87.syncthing = {
     relay = {
       enable = mkOption {
         description = "Whether to enable microbin";
@@ -56,82 +51,77 @@ in {
   };
 
   config = mkMerge [
-    (let
-      cfg = conf.relay;
-    in
-      mkIf cfg.enable {
-        users.groups."syncthing-relay" = {};
+    (let cfg = conf.relay;
+    in mkIf cfg.enable {
+      users.groups."syncthing-relay" = { };
 
-        users.users = {
-          syncthing-relay = {
-            name = "syncthing-relay";
-            #uid = config.ids.uids.calibre-server;
-            group = "syncthing-relay";
-            isSystemUser = true;
-          };
+      users.users = {
+        syncthing-relay = {
+          name = "syncthing-relay";
+          #uid = config.ids.uids.calibre-server;
+          group = "syncthing-relay";
+          isSystemUser = true;
         };
+      };
 
-        services.syncthing.relay = {
-          enable = true;
-          listenAddress = cfg.address;
-          statusListenAddress = cfg.address;
-          port = cfg.port;
-          statusPort = cfg.statusPort;
+      services.syncthing.relay = {
+        enable = true;
+        listenAddress = cfg.address;
+        statusListenAddress = cfg.address;
+        port = cfg.port;
+        statusPort = cfg.statusPort;
 
-          pools = [""];
-          extraOptions = [
-            "-keys=/var/strelaysv"
+        pools = [ "" ];
+        extraOptions = [ "-keys=/var/strelaysv" ];
+      };
+
+      systemd.services.syncthing-relay.serviceConfig = {
+        DynamicUser = lib.mkForce false;
+        User = "syncthing-relay";
+      };
+
+      networking.firewall.interfaces.${config.thongpv87.wireguard.interface}.allowedTCPPorts =
+        mkIf (assertMsg config.thongpv87.wireguard.enable
+          "Wireguard must be enable for wireguard ssh firewall") [
+            cfg.port
+            cfg.statusPort
           ];
+    })
+    (let cfg = conf.discovery;
+    in mkIf cfg.enable {
+      users.groups."syncthing-discovery" = { };
+
+      users.users = {
+        syncthing-discovery = {
+          name = "syncthing-discovery";
+          group = "syncthing-discovery";
+          isSystemUser = true;
         };
+      };
 
-        systemd.services.syncthing-relay.serviceConfig = {
-          DynamicUser = lib.mkForce false;
-          User = "syncthing-relay";
+      networking.firewall.interfaces.${config.thongpv87.wireguard.interface}.allowedTCPPorts =
+        mkIf (assertMsg config.thongpv87.wireguard.enable
+          "Wireguard must be enable for wireguard ssh firewall") [ cfg.port ];
+
+      systemd.services.syncthing-discovery = {
+        description = "Syncthing relay server";
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network.target" ];
+
+        serviceConfig = {
+          ExecStart = ''
+            ${pkgs.syncthing-discovery}/bin/stdiscosrv \
+              -db-dir=/run/stdiscosrv/ -replicate="" \
+              -key="/var/stdiscosrv/key.pem" \
+              -cert="/var/stdiscosrv/cert.pem" \
+              -listen=${cfg.address}:${builtins.toString cfg.port} -debug
+          '';
+          RuntimeDirectory = "stdiscosrv";
+          Type = "simple";
+          DynamicUser = true;
+          Restart = "on-failure";
         };
-
-        networking.firewall.interfaces.${config.jd.wireguard.interface}.allowedTCPPorts =
-          mkIf
-          (assertMsg config.jd.wireguard.enable "Wireguard must be enable for wireguard ssh firewall")
-          [cfg.port cfg.statusPort];
-      })
-    (let
-      cfg = conf.discovery;
-    in
-      mkIf cfg.enable {
-        users.groups."syncthing-discovery" = {};
-
-        users.users = {
-          syncthing-discovery = {
-            name = "syncthing-discovery";
-            group = "syncthing-discovery";
-            isSystemUser = true;
-          };
-        };
-
-        networking.firewall.interfaces.${config.jd.wireguard.interface}.allowedTCPPorts =
-          mkIf
-          (assertMsg config.jd.wireguard.enable "Wireguard must be enable for wireguard ssh firewall")
-          [cfg.port];
-
-        systemd.services.syncthing-discovery = {
-          description = "Syncthing relay server";
-          wantedBy = ["multi-user.target"];
-          after = ["network.target"];
-
-          serviceConfig = {
-            ExecStart = ''
-              ${pkgs.syncthing-discovery}/bin/stdiscosrv \
-                -db-dir=/run/stdiscosrv/ -replicate="" \
-                -key="/var/stdiscosrv/key.pem" \
-                -cert="/var/stdiscosrv/cert.pem" \
-                -listen=${cfg.address}:${builtins.toString cfg.port} -debug
-            '';
-            RuntimeDirectory = "stdiscosrv";
-            Type = "simple";
-            DynamicUser = true;
-            Restart = "on-failure";
-          };
-        };
-      })
+      };
+    })
   ];
 }

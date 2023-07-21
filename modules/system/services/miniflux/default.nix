@@ -1,13 +1,8 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib; let
-  cfg = config.jd.miniflux;
+{ config, lib, pkgs, ... }:
+with lib;
+let cfg = config.thongpv87.miniflux;
 in {
-  options.jd.miniflux = {
+  options.thongpv87.miniflux = {
     enable = mkOption {
       description = "Whether to enable miniflux";
       type = types.bool;
@@ -26,7 +21,7 @@ in {
     };
 
     firewall = mkOption {
-      type = types.enum ["world" "wg" "closed"];
+      type = types.enum [ "world" "wg" "closed" ];
       default = "closed";
       description = "Open firewall to everyone or wireguard";
     };
@@ -57,10 +52,9 @@ in {
             FETCH_YOUTUBE_WATCH_TIME = "1";
             # metrics_collector = 1;
             LOG_DATE_TIME = "on";
-            BASE_URL = let
-              proxy = config.jd.proxy;
-            in
-              mkIf (proxy.enable) "http://${proxy.address}:${builtins.toString proxy.port}/miniflux/";
+            BASE_URL = let proxy = config.thongpv87.proxy;
+            in mkIf (proxy.enable)
+            "http://${proxy.address}:${builtins.toString proxy.port}/miniflux/";
           };
         };
       };
@@ -72,17 +66,13 @@ in {
       };
     }
     (mkIf (cfg.firewall == "world") {
-      networking.firewall.allowedTCPPorts = [cfg.port];
+      networking.firewall.allowedTCPPorts = [ cfg.port ];
     })
-    (
-      let
-        wgconf = config.jd.wireguard;
-      in
-        mkIf
-        (cfg.firewall == "wg" && (assertMsg wgconf.enable "Wireguard must be enabled for wireguard ssh firewall"))
-        {
-          networking.firewall.interfaces.${wgconf.interface}.allowedTCPPorts = [cfg.port];
-        }
-    )
+    (let wgconf = config.thongpv87.wireguard;
+    in mkIf (cfg.firewall == "wg" && (assertMsg wgconf.enable
+      "Wireguard must be enabled for wireguard ssh firewall")) {
+        networking.firewall.interfaces.${wgconf.interface}.allowedTCPPorts =
+          [ cfg.port ];
+      })
   ]);
 }

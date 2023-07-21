@@ -1,18 +1,14 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.graphical.wayland;
+{ pkgs, config, lib, ... }:
+with lib;
+let
+  cfg = config.thongpv87.graphical.wayland;
   systemCfg = config.machineData.systemConfig;
   isLaptop = systemCfg ? framework && systemCfg.framework.enable;
-  isDwl = config.jd.graphical.wayland.type == "dwl";
+  isDwl = config.thongpv87.graphical.wayland.type == "dwl";
 
   dwlTags = pkgs.writeShellApplication {
     name = "dwl-waybar";
-    runtimeInputs = with pkgs; [gnugrep inotify-tools coreutils gnused gawk];
+    runtimeInputs = with pkgs; [ gnugrep inotify-tools coreutils gnused gawk ];
     text = ''
       set -e
       echo '{"text": "| 1!| 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |"}'
@@ -66,25 +62,24 @@ with lib; let
     '';
   };
 
-  screenNames =
-    if isLaptop
-    then ["eDP-1"]
-    else ["HDMI-A-1" "DP-1"];
+  screenNames = if isLaptop then [ "eDP-1" ] else [ "HDMI-A-1" "DP-1" ];
 
   # wlr-randr --on does not work for some reason on dwl. not using currently
   poweroffScreen = pkgs.writeShellApplication {
     name = "poweroff-screen";
-    runtimeInputs = with pkgs; [wlr-randr];
-    text = builtins.concatStringsSep "\n" (builtins.map screenNames (v: "wlr-randr --output ${v} --off"));
+    runtimeInputs = with pkgs; [ wlr-randr ];
+    text = builtins.concatStringsSep "\n"
+      (builtins.map screenNames (v: "wlr-randr --output ${v} --off"));
   };
 
   poweronScreen = pkgs.writeShellApplication {
     name = "poweron-screen";
-    runtimeInputs = with pkgs; [wlr-randr];
-    text = builtins.concatStringsSep "\n" (builtins.map screenNames (v: "wlr-randr --output ${v} --on"));
+    runtimeInputs = with pkgs; [ wlr-randr ];
+    text = builtins.concatStringsSep "\n"
+      (builtins.map screenNames (v: "wlr-randr --output ${v} --on"));
   };
 in {
-  options.jd.graphical.wayland = {
+  options.thongpv87.graphical.wayland = {
     enable = mkOption {
       type = types.bool;
       description = "Enable wayland";
@@ -107,7 +102,7 @@ in {
       };
 
       mode = mkOption {
-        type = types.enum ["stretch" "fill" "fit" "center" "tile"];
+        type = types.enum [ "stretch" "fill" "fit" "center" "tile" ];
         description = "Scaling mode for background";
       };
     };
@@ -116,11 +111,12 @@ in {
       enable = mkOption {
         type = types.bool;
         default = false;
-        description = "Enable screen locking, must enable it on system as well for pam.d (waylock)";
+        description =
+          "Enable screen locking, must enable it on system as well for pam.d (waylock)";
       };
 
       type = mkOption {
-        type = types.enum ["waylock" "swaylock"];
+        type = types.enum [ "waylock" "swaylock" ];
         default = "waylock";
         description = "Which screen locking software to use";
       };
@@ -141,17 +137,19 @@ in {
 
       pkg = mkOption {
         type = types.package;
-        default =
-          if isDwl
-          then builtins.trace "override waybar" pkgs.waybar.override {swaySupport = false;}
-          else builtins.trace "standard waybar" pkgs.waybar;
+        default = if isDwl then
+          builtins.trace "override waybar" pkgs.waybar.override {
+            swaySupport = false;
+          }
+        else
+          builtins.trace "standard waybar" pkgs.waybar;
         description = "Waybar package";
       };
     };
 
     foot = {
       theme = mkOption {
-        type = with types; enum ["tokyo-night" "dracula"];
+        type = with types; enum [ "tokyo-night" "dracula" ];
         description = "Theme for foot";
         default = "tokyo-night";
       };
@@ -232,9 +230,9 @@ in {
       systemd.user.targets.wayland-session = {
         Unit = {
           Description = "wayland graphical session";
-          BindsTo = ["graphical-session.target"];
-          Wants = ["graphical-session-pre.target"];
-          After = ["graphical-session-pre.target"];
+          BindsTo = [ "graphical-session.target" ];
+          Wants = [ "graphical-session-pre.target" ];
+          After = [ "graphical-session-pre.target" ];
         };
       };
     }
@@ -244,29 +242,31 @@ in {
     in {
       assertions = [
         {
-          assertion = isWaylock -> (systemCfg.graphical.wayland.waylockPam && isWaylock);
-          message = "Waylock PAM must be enabled by the system to use waylock screen locking.";
+          assertion = isWaylock
+            -> (systemCfg.graphical.wayland.waylockPam && isWaylock);
+          message =
+            "Waylock PAM must be enabled by the system to use waylock screen locking.";
         }
 
         {
-          assertion = isSwaylock -> (systemCfg.graphical.wayland.swaylockPam && isSwaylock);
-          message = "Swaylock PAM must be enabled by the system to use waylock screen locking.";
+          assertion = isSwaylock
+            -> (systemCfg.graphical.wayland.swaylockPam && isSwaylock);
+          message =
+            "Swaylock PAM must be enabled by the system to use waylock screen locking.";
         }
       ];
 
       services.swayidle = let
-        lockCommand =
-          if cfg.screenlock.type == "waylock"
-          then "${pkgs.waylock}/bin/waylock -fork-on-lock"
-          else "${pkgs.swaylock}/bin/swaylock -f";
+        lockCommand = if cfg.screenlock.type == "waylock" then
+          "${pkgs.waylock}/bin/waylock -fork-on-lock"
+        else
+          "${pkgs.swaylock}/bin/swaylock -f";
       in {
         enable = true;
-        timeouts = [
-          {
-            timeout = cfg.screenlock.timeout;
-            command = lockCommand;
-          }
-        ];
+        timeouts = [{
+          timeout = cfg.screenlock.timeout;
+          command = lockCommand;
+        }];
         # Soemtimes wlr-randr fails to turn screen back on, comment out for now
         # ++ optional isLaptop {
         #   timeout = 60;
@@ -274,14 +274,12 @@ in {
         #   resumeCommand = "${pkgs.wlr-randr}/bin/wlr-randr --output eDP-1 --on";
         # };
 
-        events = [
-          {
-            event = "before-sleep";
-            command = lockCommand;
-          }
-        ];
+        events = [{
+          event = "before-sleep";
+          command = lockCommand;
+        }];
         systemdTarget = "wayland-session.target";
-        extraArgs = ["idlehint 600"];
+        extraArgs = [ "idlehint 600" ];
       };
 
       home.packages = with pkgs;
@@ -289,32 +287,28 @@ in {
         ++ (optional (cfg.screenlock.type == "swaylock") swaylock);
     }))
     (mkIf cfg.background.enable {
-      home.packages = [pkgs.swaybg];
+      home.packages = [ pkgs.swaybg ];
 
       systemd.user.services.swaybg = mkIf cfg.background.enable {
         Unit = {
           Description = "swaybg background service";
-          Documentation = ["man:swabyg(1)"];
-          Requires = ["wayland-session.target"];
-          After = ["wayland-session.target"];
-          Before = mkIf (cfg.statusbar.enable) ["waybar.service"];
+          Documentation = [ "man:swabyg(1)" ];
+          Requires = [ "wayland-session.target" ];
+          After = [ "wayland-session.target" ];
+          Before = mkIf (cfg.statusbar.enable) [ "waybar.service" ];
         };
 
         Service = {
-          ExecStart = "${cfg.background.pkg}/bin/swaybg --image ${cfg.background.image} --mode ${cfg.background.mode}";
+          ExecStart =
+            "${cfg.background.pkg}/bin/swaybg --image ${cfg.background.image} --mode ${cfg.background.mode}";
         };
 
-        Install = {
-          WantedBy = ["wayland-session.target"];
-        };
+        Install = { WantedBy = [ "wayland-session.target" ]; };
       };
     })
     (mkIf (cfg.statusbar.enable) {
       programs.waybar = let
-        primaryDisplay =
-          if isLaptop
-          then "eDP-1"
-          else "DP-1";
+        primaryDisplay = if isLaptop then "eDP-1" else "DP-1";
 
         dwlModule = dispName: {
           exec = "${dwlTags}/bin/dwl-waybar '${dispName}'";
@@ -329,18 +323,31 @@ in {
         settings = [
           {
             layer = "bottom";
-            output = [primaryDisplay];
+            output = [ primaryDisplay ];
 
-            modules-left = ["custom/dwl"];
-            modules-center = ["clock"];
-            modules-right = ["cpu" "memory" "temperature" "battery" "backlight" "custom/media" "pulseaudio" "network" "idle_inhibitor" "tray"];
+            modules-left = [ "custom/dwl" ];
+            modules-center = [ "clock" ];
+            modules-right = [
+              "cpu"
+              "memory"
+              "temperature"
+              "battery"
+              "backlight"
+              "custom/media"
+              "pulseaudio"
+              "network"
+              "idle_inhibitor"
+              "tray"
+            ];
 
             gtk-layer-shell = true;
             modules = {
               clock = {
                 format = "{:%I:%M %p}";
                 tooltip = true;
-                tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+                tooltip-format = ''
+                  <big>{:%Y %B}</big>
+                  <tt><small>{calendar}</small></tt>'';
               };
               cpu = {
                 interval = 10;
@@ -352,7 +359,7 @@ in {
                 format = "{used:0.1f}G/{total:0.1f}G ";
                 tooltip = true;
               };
-              temperature = {};
+              temperature = { };
               battery = {
                 bat = "BAT1";
                 states = {
@@ -364,14 +371,14 @@ in {
                 format-charging = "{capacity}% ";
                 format-plugged = "{capacity}% ";
                 format-alt = "{time} {icon}";
-                format-icons = ["" "" "" "" ""];
+                format-icons = [ "" "" "" "" "" ];
                 tooltip = true;
                 tooltip-format = "{timeTo}";
               };
               backlight = {
                 device = "acpi_video1";
                 format = "{percent}% {icon}";
-                format-icons = ["" ""];
+                format-icons = [ "" "" ];
                 on-scroll-up = "${pkgs.light}/bin/light -A 2";
                 on-scroll-down = "${pkgs.light}/bin/light -U 1";
               };
@@ -382,12 +389,12 @@ in {
                 format-muted = "{volume}%  {format_source}";
                 format-source = "{volume}% ";
                 format-source-muted = "{volume}% ";
-                format-icons = {
-                  "default" = ["" "" ""];
-                };
+                format-icons = { "default" = [ "" "" "" ]; };
                 on-scroll-up = "${pkgs.scripts.soundTools}/bin/stools vol up 1";
-                on-scroll-down = "${pkgs.scripts.soundTools}/bin/stools vol down 1";
-                on-click-right = "${pkgs.scripts.soundTools}/bin/stools vol toggle";
+                on-scroll-down =
+                  "${pkgs.scripts.soundTools}/bin/stools vol down 1";
+                on-click-right =
+                  "${pkgs.scripts.soundTools}/bin/stools vol toggle";
                 on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
                 tooltip = true;
               };
@@ -409,9 +416,7 @@ in {
                   deactivated = "";
                 };
               };
-              tray = {
-                spacing = 10;
-              };
+              tray = { spacing = 10; };
               "custom/dwl" = dwlModule primaryDisplay;
               "custom/media" = {
                 format = "{icon}{}";
@@ -421,23 +426,19 @@ in {
                   Paused = " ";
                 };
                 max-length = 30;
-                exec = "${pkgs.playerctl}/bin/playerctl -a metadata --format '{\"text\": \"{{playerName}}: {{artist}} - {{markup_escape(title)}}\", \"tooltip\": \"{{playerName}} : {{markup_escape(title)}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F";
+                exec = ''
+                  ${pkgs.playerctl}/bin/playerctl -a metadata --format '{"text": "{{playerName}}: {{artist}} - {{markup_escape(title)}}", "tooltip": "{{playerName}} : {{markup_escape(title)}}", "alt": "{{status}}", "class": "{{status}}"}' -F'';
                 on-click = "${pkgs.playerctl}/bin/playerctl play-pause";
-                smooth-scrolling-threshold =
-                  if isLaptop
-                  then 10
-                  else 5;
+                smooth-scrolling-threshold = if isLaptop then 10 else 5;
                 on-scroll-up = "${pkgs.playerctl}/bin/playerctl next";
                 on-scroll-down = "${pkgs.playerctl}/bin/playerctl previous";
               };
             };
           }
           (mkIf (cfg.type == "dwl" && !isLaptop) {
-            modules-left = ["custom/dwl"];
+            modules-left = [ "custom/dwl" ];
             output = "HDMI-A-1";
-            modules = {
-              "custom/dwl" = dwlModule "HDMI-A-1";
-            };
+            modules = { "custom/dwl" = dwlModule "HDMI-A-1"; };
           })
         ];
         style = ''
@@ -457,12 +458,13 @@ in {
 
       systemd.user.services.waybar = {
         Unit = {
-          Description = "Highly customizable Wayland bar for Sway and Wlroots based compositors.";
+          Description =
+            "Highly customizable Wayland bar for Sway and Wlroots based compositors.";
           Documentation = "https://github.com/Alexays/Waybar/wiki";
-          BindsTo = ["wayland-session.target"];
-          After = ["wayland-session.target"];
-          Wants = ["tray.target"];
-          Before = ["tray.target"];
+          BindsTo = [ "wayland-session.target" ];
+          After = [ "wayland-session.target" ];
+          Wants = [ "tray.target" ];
+          Before = [ "tray.target" ];
         };
 
         Service = {
@@ -472,9 +474,7 @@ in {
           KillMode = "mixed";
         };
 
-        Install = {
-          WantedBy = ["wayland-session.target"];
-        };
+        Install = { WantedBy = [ "wayland-session.target" ]; };
       };
     })
   ]);

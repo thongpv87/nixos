@@ -1,15 +1,11 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.desktop;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.desktop;
 in {
-  options.jd.desktop = {
+  options.thongpv87.desktop = {
     enable = mkOption {
-      description = "Whether to enable desktop settings. Also tags as desktop for user settings";
+      description =
+        "Whether to enable desktop settings. Also tags as desktop for user settings";
       type = types.bool;
       default = false;
     };

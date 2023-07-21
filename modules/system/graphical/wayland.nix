@@ -1,13 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.graphical.wayland;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.graphical.wayland;
 in {
-  options.jd.graphical.wayland = {
+  options.thongpv87.graphical.wayland = {
     enable = mkOption {
       type = types.bool;
       default = false;
@@ -32,14 +27,12 @@ in {
       portal = {
         enable = true;
         wlr.enable = true;
-        extraPortals = with pkgs; [
-          xdg-desktop-portal-gtk
-        ];
+        extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
       };
     };
 
     # security.pam.services.swaylock = mkIf (cfg.swaylockPam) {};
-    security.pam.services.swaylock = {};
-    security.pam.services.waylock = mkIf (cfg.waylockPam) {};
+    security.pam.services.swaylock = { };
+    security.pam.services.waylock = mkIf (cfg.waylockPam) { };
   };
 }

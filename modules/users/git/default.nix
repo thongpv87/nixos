@@ -1,13 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.git;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.git;
 in {
-  options.jd.git = {
+  options.thongpv87.git = {
     enable = mkOption {
       description = "Enable git";
       type = types.bool;
@@ -66,8 +61,6 @@ in {
       };
     };
 
-    home.packages = with pkgs; [
-      scripts.devTools
-    ];
+    home.packages = with pkgs; [ scripts.devTools ];
   };
 }

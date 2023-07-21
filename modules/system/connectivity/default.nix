@@ -1,13 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.connectivity;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.connectivity;
 in {
-  options.jd.connectivity = {
+  options.thongpv87.connectivity = {
     bluetooth.enable = mkOption {
       description = "Enable bluetooth with default options";
       type = types.bool;
@@ -30,7 +25,7 @@ in {
   config = {
     environment.systemPackages = with pkgs;
       optional cfg.bluetooth.enable scripts.bluetoothTools
-      ++ optionals cfg.sound.enable [pulseaudio scripts.soundTools];
+      ++ optionals cfg.sound.enable [ pulseaudio scripts.soundTools ];
 
     security.rtkit.enable = cfg.sound.enable;
     services.pipewire = mkIf (cfg.sound.enable) {

@@ -1,17 +1,12 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.boot;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.boot;
 in {
-  options.jd.boot = {
+  options.thongpv87.boot = {
     type = mkOption {
       description = "Type of boot. Default encrypted-efi";
       default = null;
-      type = types.enum ["efi" "bios"];
+      type = types.enum [ "efi" "bios" ];
     };
 
     grubDevice = mkOption {
@@ -25,13 +20,11 @@ in {
     (mkIf (cfg.type == "efi") {
       boot = {
         loader = {
-          efi = {
-            efiSysMountPoint = "/boot";
-          };
+          efi = { efiSysMountPoint = "/boot"; };
 
           grub = {
             enable = true;
-            devices = ["nodev"];
+            devices = [ "nodev" ];
             efiSupport = true;
             useOSProber = true;
             version = 2;
@@ -43,10 +36,10 @@ in {
                 halt
               }
             '';
-            extraConfig =
-              if (config.jd.framework.enable)
-              then "i915.enable_psr=0"
-              else "";
+            extraConfig = if (config.thongpv87.framework.enable) then
+              "i915.enable_psr=0"
+            else
+              "";
           };
         };
       };

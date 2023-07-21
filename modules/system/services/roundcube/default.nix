@@ -1,14 +1,9 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib; let
-  cfg = config.jd.proxy;
+{ config, lib, pkgs, ... }:
+with lib;
+let cfg = config.thongpv87.proxy;
 in {
   # TODO: incomplete
-  options.jd.proxy = {
+  options.thongpv87.proxy = {
     enable = mkOption {
       description = "Whether to enable nginx reverse proxy";
       type = types.bool;
@@ -16,7 +11,7 @@ in {
     };
 
     firewall = mkOption {
-      type = types.enum ["world" "wg" "closed"];
+      type = types.enum [ "world" "wg" "closed" ];
       default = "closed";
       description = "What level firewall to open";
     };
@@ -44,21 +39,17 @@ in {
           $config['smtp_user'] = "%u";
           $config['smtp_pass'] = "%p";
         '';
-        dicts = with pkgs.aspellDicts; [en];
+        dicts = with pkgs.aspellDicts; [ en ];
       };
     }
     (mkIf (cfg.firewall == "world") {
-      networking.firewall.allowedTCPPorts = [cfg.port];
+      networking.firewall.allowedTCPPorts = [ cfg.port ];
     })
-    (
-      let
-        wgconf = config.jd.wireguard;
-      in
-        mkIf
-        (cfg.firewall == "wg" && (assertMsg wgconf.enable "Wireguard must be enabled for wireguard ssh firewall"))
-        {
-          networking.firewall.interfaces.${wgconf.interface}.allowedTCPPorts = [cfg.port];
-        }
-    )
+    (let wgconf = config.thongpv87.wireguard;
+    in mkIf (cfg.firewall == "wg" && (assertMsg wgconf.enable
+      "Wireguard must be enabled for wireguard ssh firewall")) {
+        networking.firewall.interfaces.${wgconf.interface}.allowedTCPPorts =
+          [ cfg.port ];
+      })
   ]);
 }

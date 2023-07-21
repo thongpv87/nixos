@@ -1,11 +1,7 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib; let
-  cfg = config.jd.calibre;
+{ config, lib, pkgs, ... }:
+with lib;
+let
+  cfg = config.thongpv87.calibre;
 
   enable = cfg.web.enable || cfg.server.enable;
 
@@ -16,7 +12,7 @@ with lib; let
 
   libraryDir = "/var/lib/calibre-lib";
 in {
-  options.jd.calibre = {
+  options.thongpv87.calibre = {
     web = {
       enable = mkOption {
         description = "Whether to enable calibre web";
@@ -60,7 +56,7 @@ in {
 
   config = mkIf enable (mkMerge [
     {
-      users.groups."calibre" = {};
+      users.groups."calibre" = { };
 
       users.users = {
         calibre = {
@@ -90,7 +86,8 @@ in {
 
       services.nginx.virtualHosts."proxy".locations = {
         "/calibre-web" = {
-          proxyPass = "http://${cfg.web.address}:${builtins.toString cfg.web.port}";
+          proxyPass =
+            "http://${cfg.web.address}:${builtins.toString cfg.web.port}";
           extraConfig = ''
             proxy_bind $server_addr;
             proxy_set_header        Host            chairlift.wg;
@@ -105,26 +102,28 @@ in {
     (mkIf (cfg.server.enable) {
       systemd.services.calibre-server = {
         description = "Calibre Server";
-        after = ["network.target"];
-        wantedBy = ["multi-user.target"];
+        after = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
         serviceConfig = {
           User = "calibre";
           Restart = "always";
           ExecStart = ''
             ${pkgs.calibre}/bin/calibre-server ${libraryDir} \
-               --listen-on=${cfg.server.address} --port=${builtins.toString cfg.server.port} \
+               --listen-on=${cfg.server.address} --port=${
+                 builtins.toString cfg.server.port
+               } \
                --enable-local-write \
                --url-prefix=/calibre-server
           '';
         };
-        environment = {
-          XDG_RUNTIME_DIR = "/var/lib/calibre-server";
-        };
+        environment = { XDG_RUNTIME_DIR = "/var/lib/calibre-server"; };
       };
 
       services.nginx.virtualHosts."proxy".locations = {
         "/calibre-server/" = {
-          proxyPass = "http://${cfg.server.address}:${builtins.toString cfg.server.port}/";
+          proxyPass = "http://${cfg.server.address}:${
+              builtins.toString cfg.server.port
+            }/";
         };
       };
     })

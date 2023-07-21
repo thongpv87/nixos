@@ -1,53 +1,33 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.users;
+{ pkgs, config, lib, ... }:
+with lib;
+let
+  cfg = config.thongpv87.users;
 
-  mkUser = {
-    name,
-    groups,
-    uid,
-    shell,
-    password,
-  }: {
+  mkUser = { name, groups, uid, shell, password, }: {
     inherit name;
-    value =
-      {
-        inherit name uid shell;
-        isNormalUser = true;
-        isSystemUser = false;
-        extraGroups = groups;
-      }
-      // (
-        if password == null
-        then {
-          initialPassword = "helloworld";
-        }
-        else {
-          hashedPassword = password;
-        }
-      );
+    value = {
+      inherit name uid shell;
+      isNormalUser = true;
+      isSystemUser = false;
+      extraGroups = groups;
+    } // (if password == null then {
+      initialPassword = "helloworld";
+    } else {
+      hashedPassword = password;
+    });
   };
 
-  user = {...}: {
+  user = { ... }: {
     options = {
-      name = mkOption {
-        type = types.str;
-      };
-      uid = mkOption {
-        type = types.int;
-      };
+      name = mkOption { type = types.str; };
+      uid = mkOption { type = types.int; };
       shell = mkOption {
         # TODO: remove when assertion of shells is removed
         type = with types; either package str;
       };
       groups = mkOption {
         type = with types; listOf str;
-        default = [];
+        default = [ ];
       };
       password = mkOption {
         type = with types; nullOr str;
@@ -56,10 +36,10 @@ with lib; let
     };
   };
 in {
-  options.jd.users = {
+  options.thongpv87.users = {
     users = mkOption {
       type = with types; listOf (submodule user);
-      default = [];
+      default = [ ];
     };
 
     mutableUsers = mkOption {
@@ -76,9 +56,9 @@ in {
   };
 
   config = {
-    users.users =
-      {root.initialHashedPassword = cfg.rootPassword;}
-      // builtins.listToAttrs (builtins.map mkUser cfg.users);
+    users.users = {
+      root.initialHashedPassword = cfg.rootPassword;
+    } // builtins.listToAttrs (builtins.map mkUser cfg.users);
     users.mutableUsers = cfg.mutableUsers;
   };
 }

@@ -1,13 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.applications.neomutt;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.applications.neomutt;
 in {
-  options.jd.applications.neomutt = {
+  options.thongpv87.applications.neomutt = {
     enable = mkOption {
       description = "Enable neomutt";
       type = types.bool;
@@ -15,9 +10,7 @@ in {
     };
   };
 
-  config = mkIf (config.jd.applications.enable && cfg.enable) {
-    programs.neomutt = {
-      enable = true;
-    };
+  config = mkIf (config.thongpv87.applications.enable && cfg.enable) {
+    programs.neomutt = { enable = true; };
   };
 }

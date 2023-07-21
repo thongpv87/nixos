@@ -1,13 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.graphical.xorg;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.graphical.xorg;
 in {
-  options.jd.graphical.xorg = {
+  options.thongpv87.graphical.xorg = {
     enable = mkOption {
       description = "Enable xserver.";
       type = types.bool;
@@ -15,14 +10,12 @@ in {
     };
   };
 
-  config = mkIf (config.jd.graphical.enable && cfg.enable) {
+  config = mkIf (config.thongpv87.graphical.enable && cfg.enable) {
     services.xserver = {
       enable = true;
       libinput = {
         enable = true;
-        touchpad = {
-          naturalScrolling = true;
-        };
+        touchpad = { naturalScrolling = true; };
       };
 
       displayManager.startx.enable = true;

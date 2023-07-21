@@ -1,20 +1,10 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.applications;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.applications;
 in {
-  imports = [
-    ./taskwarrior
-    ./direnv
-    ./syncthing
-    ./neomutt
-  ];
+  imports = [ ./taskwarrior ./direnv ./syncthing ./neomutt ];
 
-  options.jd.applications = {
+  options.thongpv87.applications = {
     enable = mkOption {
       description = "Enable a set of common applications";
       type = types.bool;
@@ -81,7 +71,8 @@ in {
         profile = "gpu-hq";
         vo = "gpu";
         hwdec = "auto-safe";
-        ytdl-format = "ytdl-format=bestvideo[height<=?1920][fps<=?30][vcodec!=?vp9]+bestaudio/best";
+        ytdl-format =
+          "ytdl-format=bestvideo[height<=?1920][fps<=?30][vcodec!=?vp9]+bestaudio/best";
       };
     };
 

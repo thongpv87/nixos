@@ -1,13 +1,8 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib; let
-  cfg = config.jd.acme;
+{ config, lib, pkgs, ... }:
+with lib;
+let cfg = config.thongpv87.acme;
 in {
-  options.jd.acme = {
+  options.thongpv87.acme = {
     email = mkOption {
       description = "Email to register with acme";
       type = types.str;

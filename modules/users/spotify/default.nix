@@ -1,13 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.spotify;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.spotify;
 in {
-  options.jd.spotify = {
+  options.thongpv87.spotify = {
     enable = mkOption {
       description = "Enable spotify";
       type = types.bool;
@@ -32,7 +27,7 @@ in {
     };
 
     config = mkIf (cfg.enable) {
-      xdg.configFile = {};
+      xdg.configFile = { };
 
       # homeage.file = {
       #   "spotifydconfig" = {

@@ -1,16 +1,11 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.graphical.applications;
-  isGraphical = let
-    cfg = config.jd.graphical;
+{ pkgs, config, lib, ... }:
+with lib;
+let
+  cfg = config.thongpv87.graphical.applications;
+  isGraphical = let cfg = config.thongpv87.graphical;
   in (cfg.xorg.enable == true || cfg.wayland.enable == true);
 in {
-  options.jd.graphical.applications.anki = {
+  options.thongpv87.graphical.applications.anki = {
     enable = mkOption {
       default = false;
       type = types.bool;
@@ -30,13 +25,11 @@ in {
     };
   };
 
-  config =
-    mkIf
-    (isGraphical && cfg.enable && cfg.anki.enable)
-    {
-      home = {
-        packages = [pkgs.anki-bin];
-        file."${config.xdg.dataHome}/Anki2/addons21/ankisyncd/__init__.py" = mkIf (cfg.anki.sync) {
+  config = mkIf (isGraphical && cfg.enable && cfg.anki.enable) {
+    home = {
+      packages = [ pkgs.anki-bin ];
+      file."${config.xdg.dataHome}/Anki2/addons21/ankisyncd/__init__.py" =
+        mkIf (cfg.anki.sync) {
           text = ''
             import os
 
@@ -45,6 +38,6 @@ in {
             os.environ["SYNC_ENDPOINT_MEDIA"] = addr + "msync/"
           '';
         };
-      };
     };
+  };
 }

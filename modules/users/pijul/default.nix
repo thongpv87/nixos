@@ -1,13 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.pijul;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.pijul;
 in {
-  options.jd.pijul = {
+  options.thongpv87.pijul = {
     enable = mkOption {
       description = "Enable pijul";
       type = types.bool;
@@ -40,9 +35,7 @@ in {
   };
 
   config = mkIf (cfg.enable) {
-    home.packages = with pkgs; [
-      pijul
-    ];
+    home.packages = with pkgs; [ pijul ];
 
     #xdg.configFile = {
     #  "pijul/publickey.json".source = ./publickey.json;

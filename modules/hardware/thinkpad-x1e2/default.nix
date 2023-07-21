@@ -1,7 +1,7 @@
 { pkgs, config, lib, ... }:
 with lib;
 let
-  cfg = config.jd.hardware.thinkpad-x1e2;
+  cfg = config.thongpv87.hardware.thinkpad-x1e2;
   my-bamboo = pkgs.ibus-engines.bamboo.overrideAttrs (oldAttrs: {
     version = "v0.8.1";
     src = pkgs.fetchFromGitHub {
@@ -15,7 +15,7 @@ let
 
   hybridVaApiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
 in {
-  options.jd.hardware.thinkpad-x1e2 = {
+  options.thongpv87.hardware.thinkpad-x1e2 = {
     enable = mkOption {
       description =
         "Whether to enable desktop settings. Also tags as desktop for user settings";

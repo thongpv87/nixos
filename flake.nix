@@ -200,7 +200,7 @@
       };
 
       defaultUser = {
-        name = "jd";
+        name = "thongpv87";
         groups = [ "wheel" ];
         uid = 1000;
         # Fixes assertion issue: https://github.com/NixOS/nixpkgs/pull/211603
@@ -208,7 +208,8 @@
       };
 
       defaultDesktopUser = defaultUser // {
-        groups = defaultUser.groups ++ [ "networkmanager" "video" "libvirtd" ];
+        groups = defaultUser.groups
+          ++ [ "networkmanager" "video" "libvirtd" "audio" "docker" ];
       };
 
       defaultServerConfig = {
@@ -341,7 +342,7 @@
         connectivity = {
           bluetooth.enable = true;
           sound.enable = true;
-          printing.enable = true;
+          printing.enable = false;
         };
         networking = {
           firewall = {
@@ -369,7 +370,7 @@
       desktopConfig = utils.recursiveMerge [
         defaultClientConfig
         {
-          core.time = "east";
+          core.time = "Asia/Ho_Chi_Minh";
           users.mutableUsers = false;
           boot.type = "efi";
           fs = {
@@ -390,8 +391,8 @@
         {
           boot.type = "efi";
           fs = {
-            type = "zfs-v2";
-            hostId = "727a5ca8";
+            type = "ext4";
+            # hostId = "727a5ca8";
           };
 
           laptop.enable = true;
@@ -443,7 +444,7 @@
       };
 
       homeManagerConfigurations = {
-        jd = user.mkHMUser {
+        thongpv87 = user.mkHMUser {
           userConfig = {
             graphical = {
               theme = "arc-dark";
@@ -486,7 +487,8 @@
                 };
               };
             };
-            secrets.identityPaths = [ secrets.age.user.jd.privateKeyPath ];
+            secrets.identityPaths =
+              [ secrets.age.user.thongpv87.privateKeyPath ];
             gpg.enable = true;
             git = {
               enable = true;
@@ -506,7 +508,7 @@
             keybase.enable = false;
             pijul.enable = true;
           };
-          username = "jd";
+          username = "thongpv87";
         };
       };
 

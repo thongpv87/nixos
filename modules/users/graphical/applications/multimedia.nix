@@ -1,18 +1,9 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.graphical.applications;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.graphical.applications;
 in {
   config = {
-    home.packages = with pkgs; [
-      vimiv-qt
-      pinta
-      inkscape
-    ];
+    home.packages = with pkgs; [ vimiv-qt pinta inkscape ];
 
     xdg.configFile = {
       "vimiv/vimiv.conf" = {

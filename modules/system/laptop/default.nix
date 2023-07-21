@@ -1,8 +1,8 @@
 { pkgs, config, lib, ... }:
 with lib;
-let cfg = config.jd.laptop;
+let cfg = config.thongpv87.laptop;
 in {
-  options.jd.laptop = {
+  options.thongpv87.laptop = {
     enable = mkOption {
       description =
         "Whether to enable laptop settings. Also tags as laptop for user settings";
@@ -117,7 +117,7 @@ in {
           PCIE_ASPM_ON_AC = "default";
           PCIE_ASPM_ON_BAT = "powersupersave";
           USB_AUTOSUSPEND = 0;
-        } // (if config.jd.framework.enable == true then
+        } // (if config.thongpv87.framework.enable == true then
           {
             # "CPU_ENERGY_PERF_POLICY_ON_AC" = "performance";
             # "CPU_ENERGY_PERF_POLICY_ON_BAT" = "power";

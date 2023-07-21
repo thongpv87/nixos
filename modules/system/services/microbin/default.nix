@@ -1,18 +1,14 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib; let
-  cfg = config.jd.microbin;
+{ config, lib, pkgs, ... }:
+with lib;
+let
+  cfg = config.thongpv87.microbin;
 
   name = "microbin";
   user = name;
   group = name;
   id = 327;
 in {
-  options.jd.microbin = {
+  options.thongpv87.microbin = {
     enable = mkOption {
       description = "Whether to enable microbin";
       type = types.bool;
@@ -33,16 +29,18 @@ in {
   };
 
   config = mkIf (cfg.enable) (mkMerge [
-    (mkIf config.jd.impermanence.enable {
-      environment.persistence.${config.jd.impermanence.persistedDatasets."data".backup} = {
-        directories = ["/var/lib/private/microbin"];
+    (mkIf config.thongpv87.impermanence.enable {
+      environment.persistence.${
+        config.thongpv87.impermanence.persistedDatasets."data".backup
+      } = {
+        directories = [ "/var/lib/private/microbin" ];
       };
     })
     {
       systemd.services.microbin = {
         description = "Microbin - pastebin server";
-        wantedBy = ["multi-user.target"];
-        after = ["network.target"];
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network.target" ];
 
         serviceConfig = {
           ExecStart = ''

@@ -1,11 +1,6 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
+{ pkgs, config, lib, ... }:
 with lib; {
-  options.jd.extraContainer = {
+  options.thongpv87.extraContainer = {
     enable = mkOption {
       description = "Enable extra-container";
       type = types.bool;

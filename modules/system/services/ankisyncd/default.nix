@@ -1,18 +1,14 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-with lib; let
-  cfg = config.jd.ankisyncd;
+{ config, lib, pkgs, ... }:
+with lib;
+let
+  cfg = config.thongpv87.ankisyncd;
 
   name = "ankisyncd";
   user = name;
   group = name;
   id = 326;
 in {
-  options.jd.ankisyncd = {
+  options.thongpv87.ankisyncd = {
     enable = mkOption {
       description = "Whether to enable ankisyncd";
       type = types.bool;
@@ -20,7 +16,7 @@ in {
     };
 
     firewall = mkOption {
-      type = types.enum ["world" "wg" "closed"];
+      type = types.enum [ "world" "wg" "closed" ];
       default = "closed";
       description = "Open firewall to everyone or wireguard";
     };
@@ -47,7 +43,7 @@ in {
   config = mkIf (cfg.enable) (mkMerge [
     {
       users = {
-        groups.${group} = {};
+        groups.${group} = { };
         users.${user} = {
           inherit group;
           isSystemUser = true;
@@ -57,9 +53,9 @@ in {
 
       systemd.services.ankisyncd = {
         description = "ankisyncd - Anki sync server";
-        wantedBy = ["multi-user.target"];
-        after = ["network.target"];
-        path = [pkgs.ankisyncd];
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network.target" ];
+        path = [ pkgs.ankisyncd ];
 
         serviceConfig = {
           # Use my version of ankisyncd because the nixpkgs version is not compatible with up to date clients
@@ -82,17 +78,13 @@ in {
       };
     }
     (mkIf (cfg.firewall == "world") {
-      networking.firewall.allowedTCPPorts = [cfg.port];
+      networking.firewall.allowedTCPPorts = [ cfg.port ];
     })
-    (
-      let
-        wgconf = config.jd.wireguard;
-      in
-        mkIf
-        (cfg.firewall == "wg" && (assertMsg wgconf.enable "Wireguard must be enabled for wireguard ssh firewall"))
-        {
-          networking.firewall.interfaces.${wgconf.interface}.allowedTCPPorts = [cfg.port];
-        }
-    )
+    (let wgconf = config.thongpv87.wireguard;
+    in mkIf (cfg.firewall == "wg" && (assertMsg wgconf.enable
+      "Wireguard must be enabled for wireguard ssh firewall")) {
+        networking.firewall.interfaces.${wgconf.interface}.allowedTCPPorts =
+          [ cfg.port ];
+      })
   ]);
 }

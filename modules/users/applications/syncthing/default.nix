@@ -1,17 +1,11 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.applications.syncthing;
-  isGraphical = let
-    graphical = config.jd.graphical;
-  in
-    graphical.xorg.enable == true || graphical.wayland.enable == true;
+{ pkgs, config, lib, ... }:
+with lib;
+let
+  cfg = config.thongpv87.applications.syncthing;
+  isGraphical = let graphical = config.thongpv87.graphical;
+  in graphical.xorg.enable == true || graphical.wayland.enable == true;
 in {
-  options.jd.applications.syncthing = {
+  options.thongpv87.applications.syncthing = {
     enable = mkOption {
       description = "Enable syncthing";
       type = types.bool;
@@ -19,7 +13,7 @@ in {
     };
   };
 
-  config = mkIf (config.jd.applications.enable && cfg.enable) {
+  config = mkIf (config.thongpv87.applications.enable && cfg.enable) {
     services.syncthing = {
       enable = true;
       # TODO: fails on service starting during login. Restarting it sets it up correctly
@@ -30,9 +24,9 @@ in {
       "syncthingtray" = {
         Unit = {
           Description = "syncthingtray";
-          Requires = ["tray.target"];
-          After = ["graphical-session-pre.target" "tray.target"];
-          PartOf = ["graphical-session.target"];
+          Requires = [ "tray.target" ];
+          After = [ "graphical-session-pre.target" "tray.target" ];
+          PartOf = [ "graphical-session.target" ];
         };
 
         Service = {
@@ -43,7 +37,7 @@ in {
           ExecStart = "${pkgs.syncthingtray-minimal}/bin/syncthingtray";
         };
 
-        Install = {WantedBy = ["tray.target"];};
+        Install = { WantedBy = [ "tray.target" ]; };
       };
     };
   };

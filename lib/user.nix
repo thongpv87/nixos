@@ -21,7 +21,7 @@ with builtins; {
         machineModule
         pkgs.homeage.homeManagerModules.homeage
         {
-          jd = userConfig;
+          thongpv87 = userConfig;
           nixpkgs = {
             overlays = overlays;
             config = {

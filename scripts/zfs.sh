@@ -16,13 +16,16 @@ answer=$(while ! head -c 1 | grep -i '[ny]' ;do true ;done )
 stty $old_stty_cfg
 if [ "answer" != "${answer#[Yy]}" ]; then
   BOOT=${DISK}p1
+  SWAP=${DISK}p2
   ZFS=${DISK}p3
 else
   BOOT=${DISK}1
+  SWAP=${DISK}2
   ZFS=${DISK}3
 fi
 
 mkfs.vfat -n BOOT $BOOT
+mkswap $SWAP
 
 zpool create \
   -f \

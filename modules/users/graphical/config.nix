@@ -1,11 +1,6 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
+{ pkgs, config, lib, ... }:
 with lib; {
-  config.jd.graphical = {
+  config.thongpv87.graphical = {
     wayland = {
       enable = mkDefault false;
       type = mkDefault null;
@@ -22,9 +17,7 @@ with lib; {
         pkg = mkDefault pkgs.waybar;
       };
 
-      screenlock = {
-        enable = mkDefault false;
-      };
+      screenlock = { enable = mkDefault false; };
     };
   };
 }

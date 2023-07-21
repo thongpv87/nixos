@@ -1,13 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.gpg;
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.gpg;
 in {
-  options.jd.gpg = {
+  options.thongpv87.gpg = {
     enable = mkOption {
       description = "enable gpg";
       type = types.bool;
@@ -16,9 +11,7 @@ in {
   };
 
   config = mkIf (cfg.enable) {
-    home.packages = with pkgs; [
-      pinentry-gnome
-    ];
+    home.packages = with pkgs; [ pinentry-gnome ];
 
     programs.gpg = {
       enable = true;

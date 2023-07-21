@@ -1,16 +1,9 @@
-{
-  inputs,
-  patchedPkgs,
-}: {
-  pkgs,
-  config,
-  lib,
-  ...
-}:
-with lib; let
-  cfg = config.jd.core;
+{ inputs, patchedPkgs, }:
+{ pkgs, config, lib, ... }:
+with lib;
+let cfg = config.thongpv87.core;
 in {
-  options.jd.core = {
+  options.thongpv87.core = {
     enable = mkOption {
       description = "Enable core options";
       type = types.bool;
@@ -19,7 +12,7 @@ in {
 
     time = mkOption {
       description = "Time zone";
-      type = types.enum ["west" "east" "asia"];
+      type = types.enum [ "west" "east" "asia" ];
       default = "east";
     };
 
@@ -32,35 +25,22 @@ in {
 
   config = mkIf (cfg.enable) {
     i18n.defaultLocale = "en_US.UTF-8";
-    time.timeZone =
-      if (cfg.time == "east")
-      then "US/Eastern"
-      else
-        (
-          if cfg.time == "west"
-          then "US/Pacific"
-          else "Asia/Bangkok"
-        );
+    time.timeZone = if (cfg.time == "east") then
+      "US/Eastern"
+    else
+      (if cfg.time == "west" then "US/Pacific" else cfg.time);
 
     # Nix search paths/registries from:
     # https://github.com/gytis-ivaskevicius/flake-utils-plus/blob/166d6ebd9f0de03afc98060ac92cba9c71cfe550/lib/options.nix
     # Context thread: https://github.com/gytis-ivaskevicius/flake-utils-plus/blob/166d6ebd9f0de03afc98060ac92cba9c71cfe550/lib/options.nix
     nix = let
-      flakes =
-        filterAttrs
-        (name: value: value ? outputs)
-        inputs;
-      flakesWithPkgs =
-        filterAttrs
-        (name: value:
-          value.outputs ? legacyPackages || value.outputs ? packages)
-        flakes;
-      nixRegistry = builtins.mapAttrs (name: v: {flake = v;}) flakes;
+      flakes = filterAttrs (name: value: value ? outputs) inputs;
+      flakesWithPkgs = filterAttrs (name: value:
+        value.outputs ? legacyPackages || value.outputs ? packages) flakes;
+      nixRegistry = builtins.mapAttrs (name: v: { flake = v; }) flakes;
     in {
       registry = nixRegistry;
-      nixPath =
-        mapAttrsToList
-        (name: _: "${name}=/etc/nix/inputs/${name}")
+      nixPath = mapAttrsToList (name: _: "${name}=/etc/nix/inputs/${name}")
         flakesWithPkgs;
       package = pkgs.nixUnstable;
       gc = {
@@ -91,25 +71,18 @@ in {
     };
 
     environment = {
-      sessionVariables = {
-        EDITOR = "vim";
-      };
-      etc =
-        mapAttrs'
-        (name: value: {
-          name = "nix/inputs/${name}";
-          value = {
-            source =
-              if name == "nixpkgs"
-              then patchedPkgs.outPath
-              else value.outPath;
-          };
-        })
-        inputs;
+      sessionVariables = { EDITOR = "vim"; };
+      etc = mapAttrs' (name: value: {
+        name = "nix/inputs/${name}";
+        value = {
+          source =
+            if name == "nixpkgs" then patchedPkgs.outPath else value.outPath;
+        };
+      }) inputs;
 
-      shells = [pkgs.zsh pkgs.bash];
+      shells = [ pkgs.zsh pkgs.bash ];
       # ZSH completions
-      pathsToLink = ["/share/zsh"];
+      pathsToLink = [ "/share/zsh" ];
       systemPackages = with pkgs; [
         # Misc.
         neofetch

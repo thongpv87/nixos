@@ -1,12 +1,12 @@
 { pkgs, config, lib, ... }:
 with lib;
-let cfg = config.jd.fs;
+let cfg = config.thongpv87.fs;
 in {
-  options.jd.fs = {
+  options.thongpv87.fs = {
     type = mkOption {
       description = "Type of boot. Default encrypted-efi";
       default = null;
-      type = types.enum [ "encrypted-efi" "zfs" "zfs-v2" ];
+      type = types.enum [ "ext4" "encrypted-efi" "zfs" "zfs-v2" ];
     };
 
     hostId = mkOption {
@@ -34,6 +34,20 @@ in {
 
   config = let
     fsConfig = mkMerge [
+      (mkIf (cfg.type == "ext4") {
+        fileSystems."/" = {
+          device = "/dev/disk/by-label/EXT4_ROOT";
+          fsType = "ext4";
+        };
+
+        fileSystems."/boot" = {
+          device = "/dev/disk/by-label/EXT4_BOOT";
+          fsType = "vfat";
+        };
+
+        swapDevices = [{ device = "/dev/disk/by-label/EXT4_SWAP"; }];
+      })
+
       (mkIf (cfg.type == "encrypted-efi") {
         environment.systemPackages = with pkgs; [ e2fsprogs ];
         fileSystems."/" = {
@@ -98,10 +112,10 @@ in {
       })
       (mkIf (cfg.type == "zfs-v2") (mkMerge [
         {
-          jd.impermanence.rollbackDatasets =
+          thongpv87.impermanence.rollbackDatasets =
             [ "rpool/local" "rpool/local/root" "rpool/local/home" ];
 
-          jd.impermanence.persistedDatasets = {
+          thongpv87.impermanence.persistedDatasets = {
             "root" = { };
             "data" = { };
           };
@@ -172,10 +186,10 @@ in {
         })
       ]))
       (mkIf (cfg.type == "zfs") {
-        jd.impermanence.rollbackDatasets =
+        thongpv87.impermanence.rollbackDatasets =
           [ "rpool/local/root" "rpool/local/home" ];
 
-        jd.impermanence.persistedDatasets = {
+        thongpv87.impermanence.persistedDatasets = {
           "root" = {
             persist = "/persist";
             backup = "/persist";

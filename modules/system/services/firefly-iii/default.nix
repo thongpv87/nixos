@@ -1,20 +1,14 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ config, lib, pkgs, ... }:
 # TODO: Incomplete
-with lib; let
-  cfg = config.jd.firefly-iii;
+with lib;
+let
+  cfg = config.thongpv87.firefly-iii;
   name = "firefly-iii";
   dbName = "firefly_iii";
   user = name;
   group = user;
 
-  firefly-iii = pkgs.jdpkgs.firefly-iii.override {
-    dataDir = cfg.dataDir;
-  };
+  firefly-iii = pkgs.jdpkgs.firefly-iii.override { dataDir = cfg.dataDir; };
 
   firefly-dir = "${firefly-iii}/share/php/firefly-iii";
 
@@ -29,7 +23,7 @@ with lib; let
     $sudo ${pkgs.php}/bin/php artisan $*
   '';
 in {
-  options.jd.firefly-iii = {
+  options.thongpv87.firefly-iii = {
     enable = mkEnableOption "Firefly III";
 
     dataDir = mkOption {
@@ -40,7 +34,8 @@ in {
 
     appUrl = mkOption {
       type = types.str;
-      description = "The root URL that you want to host Firefly III on. All URLS in Firefly III will be generated using this value.";
+      description =
+        "The root URL that you want to host Firefly III on. All URLS in Firefly III will be generated using this value.";
       default = "http://chairlift.wg/miniflux";
     };
 
@@ -56,7 +51,7 @@ in {
 
   config = mkIf (cfg.enable) {
     users = {
-      groups.${group} = {};
+      groups.${group} = { };
       users.${user} = {
         inherit group;
         description = "Firefly III user";
@@ -66,22 +61,16 @@ in {
     services = {
       postgresql = {
         enable = true;
-        ensureUsers = [
-          {
-            name = user;
-            ensurePermissions = {
-              "DATABASE ${dbName}" = "ALL PRIVILIGES";
-            };
-          }
-        ];
-        ensureDatabases = [dbName];
+        ensureUsers = [{
+          name = user;
+          ensurePermissions = { "DATABASE ${dbName}" = "ALL PRIVILIGES"; };
+        }];
+        ensureDatabases = [ dbName ];
       };
 
       phpfpm.pools.${name} = {
         inherit user group;
-        phpOptions = "
-          log_errors = on
-        ";
+        phpOptions = "\n          log_errors = on\n        ";
         settings = {
           "listen.owner" = user;
           "listen.group" = group;
@@ -103,13 +92,15 @@ in {
               index = "index.php";
               tryFiles = "$uri $uri/ /index.php?$query_string";
             };
-            "~ /firefly-iii/\.php$" = {
+            "~ /firefly-iii/.php$" = {
               root = "${firefly-dir}/public";
               extraConfig = ''
-                fastcgi_pass unix:${config.services.phpfpm.pools.${name}.socket};
+                fastcgi_pass unix:${
+                  config.services.phpfpm.pools.${name}.socket
+                };
               '';
             };
-            "~ /firefly-iii/\.(js|css|gif|png|ico|jpg|jpeg)$" = {
+            "~ /firefly-iii/.(js|css|gif|png|ico|jpg|jpeg)$" = {
               root = "${firefly-dir}/public";
               extraConfig = ''
                 expires 365d;
@@ -122,43 +113,57 @@ in {
 
     systemd.services."${name}-setup" = {
       description = "Preparation tasks for Firefly III";
-      before = ["phpfpm-${name}.service"];
-      requires = ["postgresql.service"];
-      after = ["postgresql.service"];
-      wantedBy = ["multi-user.target"];
+      before = [ "phpfpm-${name}.service" ];
+      requires = [ "postgresql.service" ];
+      after = [ "postgresql.service" ];
+      wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
         User = user;
         WorkingDirectory = firefly-dir;
       };
-      path = [pkgs.replace-secret];
+      path = [ pkgs.replace-secret ];
       script = let
-        isSecret = v: isAttrs v && v ? _secret && (isString v._secret || builtins.isPath v._secret);
+        isSecret = v:
+          isAttrs v && v ? _secret
+          && (isString v._secret || builtins.isPath v._secret);
         fireflyEnvVars = generators.toKeyValue {
           mkKeyValue = flip generators.mkKeyValueDefault "=" {
             mkValueString = v:
               with builtins;
-                if isInt v
-                then toString v
-                else if isString v
-                then v
-                else if true == v
-                then "true"
-                else if false == v
-                then "false"
-                else if isSecret v
-                then hashString "sha256" v._secret
-                else throw "unsupported type ${typeOf v}: ${(generators.toPretty {}) v}";
+              if isInt v then
+                toString v
+              else if isString v then
+                v
+              else if true == v then
+                "true"
+              else if false == v then
+                "false"
+              else if isSecret v then
+                hashString "sha256" v._secret
+              else
+                throw
+                "unsupported type ${typeOf v}: ${(generators.toPretty { }) v}";
           };
         };
-        secretPaths = mapAttrsToList (_: v: v._secret) (filterAttrs (_: isSecret) cfg.config);
+        secretPaths = mapAttrsToList (_: v: v._secret)
+          (filterAttrs (_: isSecret) cfg.config);
         mkSecretReplacement = file: ''
-          replace-secret ${escapeShellArgs [(builtins.hashString "sha256" file) file "${cfg.dataDir}/.env"]}
+          replace-secret ${
+            escapeShellArgs [
+              (builtins.hashString "sha256" file)
+              file
+              "${cfg.dataDir}/.env"
+            ]
+          }
         '';
         secretReplacements = concatMapStrings mkSecretReplacement secretPaths;
-        filteredConfig = converge (filterAttrsRecursive (_: v: ! elem v [{} null])) cfg.config;
-        fireflyEnv = pkgs.writeText "firefly-iii.env" (fireflyEnvVars filteredConfig);
+        filteredConfig =
+          converge (filterAttrsRecursive (_: v: !elem v [ { } null ]))
+          cfg.config;
+        fireflyEnv =
+          pkgs.writeText "firefly-iii.env" (fireflyEnvVars filteredConfig);
       in ''
         set -euo pipefail
         umask 077
