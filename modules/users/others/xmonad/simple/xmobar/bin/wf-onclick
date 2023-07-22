@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+info="$(nmcli -f SSID,SIGNAL,BARS device wifi | head -n 6 | tail -n 5 | sed "s/\t/'    '/g")"
+notify-send "Wi-Fi" "$info"

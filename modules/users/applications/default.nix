@@ -47,6 +47,7 @@ in {
       hunspell
       hunspellDicts.en_US-large
       hyphen
+      nixfmt
 
       # nixpkgs
       nixpkgs-review

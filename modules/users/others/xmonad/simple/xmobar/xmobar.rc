@@ -1,0 +1,33 @@
+Config { font = "xft:FiraCode Nerd Font Mono:style=Medium"
+       , additionalFonts = ["xft:Font Awesome 6 Free Solid:style=solid"]
+       , border = NoBorder
+       , bgColor = "#121212"
+       , fgColor = "#555555"
+       , alpha = 255
+       , position = Top
+       , textOffset = -1
+       , iconOffset = -1
+       , lowerOnStart = True
+       , pickBroadest = False
+       , persistent = False
+       , hideOnStart = False
+       -- , iconRoot = "."
+       , allDesktops = True
+       , overrideRedirect = True
+       , commands = [ Run XMonadLog
+         , Run Network "wlp82s0" ["-t", "<fn=1></fn> <rx>", "-S", "True", "-L","102400","-H","2048000",
+                                          "--normal","green","--high","red", "-m", "6" ] 100
+         ,Run BatteryP ["BAT0"]
+           ["-t", "<acstatus><left>%/<timeleft>"
+             ,"-L", "15", "-H", "50", "-p", "3"
+             ,"--", "-O", "<fc=#F8A94></fc>", "-i", "<fc=#51d272></fc>", "-o", ""
+             ,"--lows", "<fn=1></fn>", "--mediums", "<fn=1></fn>", "--highs", "<fn=1></fn>"
+             ] 600
+         , Run Date "%a %F %H:%M" "date" 600
+         , Run Alsa "default" "Master" ["-t", "<fn=1><status></fn> <volume>%", "--", "-o", "", "-O", ""
+                                       ,"-c", "#ff6188", "-C", "#AB9DF2", "-h", "", "-m", "", "-l", "" ]
+         ]
+       , sepChar = "%"
+       , alignSep = "}{"
+       , template = "<fn=1>%XMonadLog%</fn> } { <fc=#ab9df2>%alsa:default:Master%</fc> | <fc=#ff6188>%wlp82s0%</fc> | <fc=#78dce8>%battery%</fc> | <fc=#ee9a00>%date%</fc>"
+       }

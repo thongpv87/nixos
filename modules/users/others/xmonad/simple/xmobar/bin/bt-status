@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+if [[ $(systemctl status bluetooth | grep "inactive (dead)" | wc -l) == 1 ]]; then
+   echo ""
+   exit;
+fi
+
+info=$(bluetoothctl info)
+if [[ $(echo "$info" | grep "Connected: yes" | wc -l) -ge 1 ]]; then
+   type=$(echo "$info" | gawk 'match($0, /Icon: (.*)$/,type) {print type[1]}')
+   if [[ "$type" == "audio-headset" ]]; then
+      echo "<fc=#0faaf7></fc>";
+   elif [[ "$type" =~ ^audio.* ]]; then
+      echo "<fc=#0faaf7></fc>";
+   else
+      echo "<fc=#0faaf7></fc>";
+   fi
+else
+    echo "";
+fi

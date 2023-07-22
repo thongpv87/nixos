@@ -1,6 +1,8 @@
 { pkgs, config, lib, ... }:
 with lib; {
   config.thongpv87.graphical = {
+    enable = mkDefault false;
+
     wayland = {
       enable = mkDefault false;
       type = mkDefault null;

@@ -149,7 +149,7 @@ in {
               firefox-translations
 
               # Netflix
-              netflix-1080p
+              # netflix-1080p
 
               # Youtube
               sponsorblock

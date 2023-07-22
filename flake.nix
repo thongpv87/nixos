@@ -449,6 +449,7 @@
         thongpv87 = user.mkHMUser {
           userConfig = {
             graphical = {
+              enable = true;
               theme = "arc-dark";
               applications = {
                 enable = true;
@@ -478,25 +479,27 @@
               direnv.enable = true;
               syncthing.enable = true;
               neomutt.enable = true;
-              taskwarrior = {
-                enable = true;
-                server = {
-                  enable = true;
-                  key = secrets.taskwarrior.client.key.secret.file;
-                  ca = secrets.taskwarrior.client.ca.secret.file;
-                  cert = secrets.taskwarrior.client.cert.secret.file;
-                  credentials = secrets.taskwarrior.credentials;
-                };
-              };
+              # taskwarrior = {
+              #   enable = false;
+              #   server = {
+              #     enable = true;
+              #     key = secrets.taskwarrior.client.key.secret.file;
+              #     ca = secrets.taskwarrior.client.ca.secret.file;
+              #     cert = secrets.taskwarrior.client.cert.secret.file;
+              #     credentials = secrets.taskwarrior.credentials;
+              #   };
+              # };
             };
-            secrets.identityPaths =
-              [ secrets.age.user.thongpv87.privateKeyPath ];
+            secrets.identityPaths = [
+              "~/.ssh/id_rsa"
+              # secrets.age.user.thongpv87.privateKeyPath
+            ];
             gpg.enable = true;
             git = {
               enable = true;
               allowedSignerFile = builtins.toString authorizedKeyFiles;
             };
-            zsh.enable = true;
+            zsh.enable = false;
             ssh.enable = true;
             weechat.enable = true;
             office365 = {
@@ -509,6 +512,7 @@
             };
             keybase.enable = false;
             pijul.enable = false;
+            others.enable = true;
           };
           username = "thongpv87";
         };

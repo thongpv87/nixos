@@ -17,5 +17,6 @@
     ./pijul
     ./secrets
     ./weechat
-  ];
-}
+    ./others
+   ];
+  }

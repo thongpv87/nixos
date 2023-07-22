@@ -1516,8 +1516,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1689779011,
-        "narHash": "sha256-nU4UfOAMiP56Yx0IMHjhg4zA1SNqhdPrUYXIw9AxzWM=",
+        "lastModified": 1690037397,
+        "narHash": "sha256-olzVUJBbonCVeCpfB4WoNrCH6rYn0uG4uBPlwBD2ACI=",
+        "ref": "refs/heads/master",
+        "rev": "6a484035476f7a3694f8a47c4cfdb8a2b3574464",
+        "revCount": 3,
         "type": "git",
         "url": "file:///home/thongpv87/ws/secret"
       },

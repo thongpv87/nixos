@@ -1,0 +1,4 @@
+packages: xmobar.cabal
+
+package xmobar
+        flags: +all_extensions

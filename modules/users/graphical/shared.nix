@@ -8,7 +8,7 @@ in {
     default = "arc-dark";
   };
 
-  config = mkIf (cfg.xorg.enable == true || cfg.wayland.enable == true) {
+  config = mkIf (cfg.graphical.enable == true) {
     home = {
       sessionVariables = {
         QT_QPA_PLATFORMTHEME = "qt5ct";
@@ -27,7 +27,7 @@ in {
         (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
         noto-fonts-emoji
         roboto
-        bm-font
+        # bm-font
         noto-fonts-cjk # Chinese
         dejavu_fonts
         liberation_ttf
@@ -82,13 +82,13 @@ in {
     };
 
     # https://github.com/nix-community/home-manager/issues/2064
-    systemd.user.targets.tray = {
-      Unit = {
-        Description = "Home manager system tray";
-        Requires = [ "graphical-session-pre.target" ];
-        After = [ "xdg-desktop-portal-gtk.service" ];
-      };
-    };
+    # systemd.user.targets.tray = {
+    #   Unit = {
+    #     Description = "Home manager system tray";
+    #     Requires = [ "graphical-session-pre.target" ];
+    #     After = [ "xdg-desktop-portal-gtk.service" ];
+    #   };
+    # };
 
     systemd.user.sessionVariables = {
       # So graphical services are themed (eg trays)
@@ -164,7 +164,7 @@ in {
       "org/gnome/desktop/interface" = {
         # https://askubuntu.com/questions/1404764/how-to-use-hdystylemanagercolor-scheme
         color-scheme = "prefer-dark";
-        text-scaling-factor = 1.25;
+        text-scaling-factor = 1.0;
       };
     };
 

@@ -1,0 +1,5 @@
+function haskell-env() {
+  pkgs=$@
+  echo "Starting haskell shell, pkgs = $pkgs"
+  nix-shell -p "haskellPackages.ghcWithPackages (pkgs: with pkgs; [$pkgs])"
+}
