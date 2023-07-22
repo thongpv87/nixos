@@ -1,7 +1,7 @@
 { pkgs, config, lib, ... }:
 with lib;
 let
-  cfg = config.thongpv87.hardware.thinkpad-x1e2;
+  cfg = config.thongpv87.system.hardware.thinkpad-x1e2;
   my-bamboo = pkgs.ibus-engines.bamboo.overrideAttrs (oldAttrs: {
     version = "v0.8.1";
     src = pkgs.fetchFromGitHub {
@@ -15,7 +15,7 @@ let
 
   hybridVaApiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
 in {
-  options.thongpv87.hardware.thinkpad-x1e2 = {
+  options.thongpv87.system.hardware.thinkpad-x1e2 = {
     enable = mkOption {
       description =
         "Whether to enable desktop settings. Also tags as desktop for user settings";
@@ -276,6 +276,7 @@ in {
       {
         nixpkgs.config.allowUnfree = true;
         services.xserver = {
+          enable = true;
           layout = "us";
           libinput.enable = true;
           xkbModel = "thinkpad";
@@ -289,7 +290,6 @@ in {
             Option "DRI" "3"
             Option "TearFree" "true"
           '';
-          enable = true;
         };
       })
 
@@ -312,7 +312,6 @@ in {
           };
         };
         services.xserver = {
-          enable = true;
           videoDrivers = [ "nvidia" ];
           deviceSection = ''
             Option "DRI" "3"
@@ -338,7 +337,6 @@ in {
 
         services.xserver = {
           videoDrivers = [ "nvidia" ];
-          enable = true;
           screenSection = ''
             Option         "metamodes" "nvidia-auto-select +0+0 {ForceFullCompositionPipeline=On}"
             Option         "AllowIndirectGLXProtocol" "off"

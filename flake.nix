@@ -354,12 +354,15 @@
         };
         graphical = {
           enable = true;
-          xorg.enable = false;
+          xorg.enable = true;
           wayland = {
             enable = true;
             waylockPam = true;
           };
         };
+
+        # greetd.enable = true;
+
         ssh = {
           enable = true;
           type = "client";
@@ -390,16 +393,13 @@
         defaultClientConfig
         {
           boot.type = "efi";
-          fs = {
-            type = "ext4";
-            # hostId = "727a5ca8";
-          };
+          fs = { type = "ext4"; };
 
           laptop.enable = true;
           secrets.identityPaths = [ "" ];
           networking.interfaces = [ "wlan0" ];
 
-          hardware.thinkpad-x1e2 = {
+          system.hardware.thinkpad-x1e2 = {
             enable = true;
             fancontrol = "manual";
             undervolt = true;
@@ -456,12 +456,12 @@
                 libreoffice.enable = true;
                 anki = {
                   enable = true;
-                  sync = true;
+                  sync = false;
                 };
                 kdeconnect.enable = false;
               };
               wayland = {
-                enable = true;
+                enable = false;
                 type = "dwl";
                 background.enable = true;
                 statusbar.enable = true;
@@ -501,14 +501,14 @@
             weechat.enable = true;
             office365 = {
               enable = false;
-              onedriver.enable = true; # pkg currently broken
+              onedriver.enable = false; # pkg currently broken
             };
             wine = {
               enable = false; # wine things currently broken
               office365 = false;
             };
             keybase.enable = false;
-            pijul.enable = true;
+            pijul.enable = false;
           };
           username = "thongpv87";
         };

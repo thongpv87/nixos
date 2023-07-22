@@ -15,7 +15,7 @@ in {
       enable = true;
       libinput = {
         enable = true;
-        touchpad = { naturalScrolling = true; };
+        # touchpad = { naturalScrolling = true; };
       };
 
       displayManager.startx.enable = true;

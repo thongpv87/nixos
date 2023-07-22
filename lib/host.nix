@@ -50,10 +50,8 @@ with utils; {
 
       modules = [
         {
-          imports = [
-            (import ../modules/system { inherit inputs patchedPkgs; })
-            (import ../modules/hardware { inherit inputs patchedPkgs; })
-          ];
+          imports =
+            [ (import ../modules/system { inherit inputs patchedPkgs; }) ];
 
           thongpv87 = systemConfigStripped;
 
