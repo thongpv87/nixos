@@ -1,12 +1,3 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}: {
-  imports = [
-    ./wayland.nix
-    ./xorg.nix
-    ./shared.nix
-  ];
+{ pkgs, config, lib, ... }: {
+  imports = [ ./wayland.nix ./xorg.nix ./shared.nix ./desktop-env ];
 }

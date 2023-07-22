@@ -409,6 +409,8 @@
               gpuMode = "integrated";
             };
           };
+
+          graphical.desktop-env.kde.enable = true;
         }
       ];
 
