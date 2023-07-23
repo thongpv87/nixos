@@ -22,7 +22,6 @@ in {
       iputils
       usbutils
       util-linux
-
       wirelesstools
       pciutils
       usbutils

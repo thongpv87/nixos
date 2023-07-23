@@ -371,7 +371,7 @@
         extraContainer.enable = false;
       };
 
-      desktopConfig = utils.recursiveMerge [
+      serverConfig = utils.recursiveMerge [
         defaultClientConfig
         {
           core.time = "Asia/Ho_Chi_Minh";
@@ -416,24 +416,9 @@
         }
       ];
 
-      frameworkConfig = utils.recursiveMerge [
-        defaultClientConfig
-        {
-          boot.type = "efi";
-          fs.type = "encrypted-efi";
-          laptop.enable = true;
-          core.time = "east";
-          greetd.enable = true;
-          framework = {
-            enable = true;
-            fprint = { enable = true; };
-          };
-          wireguard = wireguardConf;
-          secrets.identityPaths =
-            [ secrets.age.framework.system.privateKeyPath ];
-          windows.enable = true;
-        }
-      ];
+      thinkpadConfig-zfs =
+        utils.recursiveMerge [ defaultClientConfig { fs.type = "zfs-v2"; } ];
+
     in {
       installMedia = {
         kde = host.mkISO {
@@ -554,20 +539,28 @@
           stateVersion = "23.05";
         };
 
-        framework = host.mkHost {
-          name = "framework";
-          kernelPackage = pkgs.linuxPackages_latest;
-          initrdMods =
-            [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
-          kernelMods = [ "kvm-intel" ];
-          kernelParams = [ ];
+        thinkpad-zfs = host.mkHost {
+          name = "thinkpad";
+          kernelPackage = pkgs.zfs.latestCompatibleLinuxPackages;
+          initrdMods = [
+            "xhci_pci"
+            "nvme"
+            "usb_storage"
+            "sd_mod"
+            "battery"
+            "thinkpad_acpi"
+            "i915"
+          ];
+          kernelMods = [ "kvm-intel" "acpi_call" "coretemp" ];
+          kernelParams =
+            [ "quiet" "msr.allow_writes=on" "cpuidle.governor=teo" ];
           kernelPatches = [ ];
-          systemConfig = frameworkConfig;
-          cpuCores = 8;
-          stateVersion = "21.11";
+          systemConfig = thinkpadConfig-zfs;
+          cpuCores = 12;
+          stateVersion = "23.05";
         };
 
-        desktop = host.mkHost {
+        openvpn-aws = host.mkHost {
           name = "desktop";
           kernelPackage = pkgs.zfs.latestCompatibleLinuxPackages;
           kernelParams = [ "nohibernate" ];
@@ -575,74 +568,28 @@
             [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
           kernelMods = [ "kvm-amd" ];
           kernelPatches = [ ];
-          systemConfig = desktopConfig;
+          systemConfig = serverConfig;
           cpuCores = 12;
           stateVersion = "21.11";
         };
 
-        chairlift = host.mkHost {
-          name = "chairlift";
-          initrdMods = [ "sd_mod" "sr_mod" "ahci" "xhci_pci" ];
-          kernelMods = [ ];
-          kernelPackage = pkgs.zfs.latestCompatibleLinuxPackages;
-          kernelParams = [ "nohibernate" ];
-          kernelPatches = [ ];
-          systemConfig = chairliftConfig;
-          cpuCores = 2;
-          stateVersion = "21.11";
-        };
-
-        gondola = host.mkHost {
-          name = "gondola";
-          initrdMods = [
-            "sr_mod"
-            "ata_piix"
-            "virtio_pci"
-            "virtio_scsi"
-            "virtio_blk"
-            "virtio_net"
-          ];
-          kernelMods = [ ];
-          kernelPackage = pkgs.zfs.latestCompatibleLinuxPackages;
-          kernelParams = [ "nohibernate" ];
-          kernelPatches = [ ];
-          systemConfig = gondolaConfig;
-          cpuCores = 8;
-          stateVersion = "21.11";
-        };
-      };
-
-      deploy.nodes.chairlift = {
-        hostname = "10.55.0.2";
-        sshOpts = [ "-p" "23" ];
-        autoRollback = true;
-        magicRollback = true;
-        profiles = {
-          system = {
-            sshUser = "root";
-            user = "root";
-            path = deploy-rs.lib.x86_64-linux.activate.nixos
-              self.nixosConfigurations.chairlift;
+        deploy.nodes.openvpn-aws = {
+          hostname = "10.0.0.10";
+          sshOpts = [ "-p" "23" ];
+          autoRollback = true;
+          magicRollback = true;
+          profiles = {
+            system = {
+              sshUser = "root";
+              user = "root";
+              path = deploy-rs.lib.x86_64-linux.activate.nixos
+                self.nixosConfigurations.openvpn-aws;
+            };
           };
         };
-      };
 
-      deploy.nodes.gondola = {
-        hostname = "38.45.64.210";
-        sshOpts = [ "-p" "23" ];
-        autoRollback = true;
-        magicRollback = true;
-        profiles = {
-          system = {
-            sshUser = "root";
-            user = "root";
-            path = deploy-rs.lib.x86_64-linux.activate.nixos
-              self.nixosConfigurations.gondola;
-          };
-        };
+        checks = builtins.mapAttrs
+          (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
       };
-
-      checks = builtins.mapAttrs
-        (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     };
 }
