@@ -499,7 +499,7 @@
               enable = true;
               allowedSignerFile = builtins.toString authorizedKeyFiles;
             };
-            zsh.enable = false;
+            zsh.enable = true;
             ssh.enable = true;
             weechat.enable = true;
             office365 = {

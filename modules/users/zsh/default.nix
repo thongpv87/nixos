@@ -19,16 +19,20 @@ in {
       builtins.substring ((builtins.stringLength config.home.homeDirectory) + 1)
       (builtins.stringLength config.xdg.configHome) config.xdg.configHome;
   in {
-    home.file."${config.xdg.configHome}/zsh/.p10k.zsh" = {
-      source = ./p10k.zsh;
-    };
-
+    home.packages = with pkgs; [ any-nix-shell nix-zsh-completions ];
     programs.zsh = {
       enable = true;
       enableAutosuggestions = true;
       historySubstringSearch.enable = true;
       enableSyntaxHighlighting = true;
       enableCompletion = true;
+
+      shellAliases = {
+        ssh = "TERM=xterm-256color ssh";
+        irssi = "TERM=xterm-256color irssi";
+        em = "emacsclient -t";
+      };
+
       completionInit = ''
         autoload -U compinit
         # https://unix.stackexchange.com/questions/214657/what-does-zstyle-do
@@ -57,6 +61,8 @@ in {
         share = true;
         path = "${config.xdg.dataHome}/zsh/zsh_history";
       };
+      localVariables = { ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=3,bold"; };
+
       initExtraFirst = "";
       initExtraBeforeCompInit = "";
       initExtra = ''
@@ -108,14 +114,39 @@ in {
         echo -ne '\e[6 q' # use beam shape cursor on startup
         preexec() { echo -ne '\e[6 q' ;} # use beam shape cursor for each new prompt
 
-        # Source powerlevel10k
-        source ${config.xdg.configHome}/zsh/.p10k.zsh
-        source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
-
         # Disable less(1) history
         export LESSHISTSIZE=0
+
+        # theme.sh
+        if command -v theme.sh > /dev/null; then
+          [ -e ~/.theme_history ] && theme.sh "$(theme.sh -l|tail -n1)"
+        fi
+        # any-nix-shell
+        any-nix-shell zsh --info-right | source /dev/stdin
+        export DIRENV_LOG_FORMAT=
+        eval "$(${pkgs.direnv}/bin/direnv hook zsh)"
+        eval "$(${pkgs.starship}/bin/starship init zsh)"
       ''; # addd to .zshrc
-      profileExtra = ""; # profiles to add to .zprofile
+      profileExtra = ''
+        function haskell-env() {
+         pkgs=$@
+         echo "Starting haskell shell, pkgs = $pkgs"
+         nix-shell -p "haskellPackages.ghcWithPackages (pkgs: with pkgs; [$pkgs])"
+        }
+      ''; # profiles to add to .zprofile
+
+      "oh-my-zsh" = {
+        enable = true;
+        plugins = [
+          "git"
+          "sudo"
+          "gitignore"
+          "cp"
+          "docker"
+          "safe-paste"
+          "colored-man-pages"
+        ];
+      };
     };
   });
 }

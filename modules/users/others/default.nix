@@ -33,6 +33,7 @@ in
     # develop.agda.enable = mkDefault true;
     fonts.enable = mkDefault true;
     shell.enable = mkDefault true;
+    shell.zsh.enable = mkDefault false;
     others.enable = mkDefault true;
     emacs.enable = mkDefault true;
     gsettings.enable = mkDefault true;

@@ -68,13 +68,13 @@ in {
             action = ''
               vals=($1)  # space separated string to array of multiple values
               case ''${vals[3]} in
-                00000000)
+                00000000|00000001)
                   max_bright=30
                   curr_bright=$(echo $(${pkgs.light}/bin/light -G) | xargs printf "%0.f")
                   ${pkgs.light}/bin/light -S $((curr_bright<max_bright ? curr_bright : max_bright))
                   ;;
-                00000001)
-                  ${pkgs.light}/bin/light -S 100
+              #  00000001)
+              #    ${pkgs.light}/bin/light -S 100
                   ;;
               esac
             '';

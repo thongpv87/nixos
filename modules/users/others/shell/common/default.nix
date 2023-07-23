@@ -20,7 +20,7 @@ let
     cp "$fn".bk "$fn";
     chmod +w "$fn"
   '';
-  theme-sh = pkgs.writeShellScriptBin "theme.sh" ''${builtins.readFile ./theme.sh}'';
+  #theme-sh = pkgs.writeShellScriptBin "theme.sh" ''${builtins.readFile ./theme.sh}'';
 in
 {
   home.packages = with pkgs; [ starship selected-nerdfonts mkWriteable theme-sh ];

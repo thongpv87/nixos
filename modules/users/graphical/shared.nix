@@ -26,7 +26,7 @@ in {
         # Fonts
         (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
         noto-fonts-emoji
-        roboto
+        google-fonts
         # bm-font
         noto-fonts-cjk # Chinese
         dejavu_fonts

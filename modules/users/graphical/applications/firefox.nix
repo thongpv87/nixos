@@ -138,7 +138,7 @@ in {
 
               # Rycee NUR: https://nur.nix-community.org/repos/rycee/
               user-agent-string-switcher
-              bypass-paywalls-clean
+              # bypass-paywalls-clean
               redirector
               rust-search-extension
               bitwarden
