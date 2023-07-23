@@ -5,7 +5,7 @@ DISK=$1
 sgdisk --zap-all $DISK
 
 sgdisk -n 0:0:+1GiB -t 0:ef00 -c 0:boot $DISK
-sgdisk -n 0:0:+20GiB -t 0:8200 -c 0:swap $DISK
+sgdisk -n 0:0:+32GiB -t 0:8200 -c 0:swap $DISK
 sgdisk -n 0:0:0 -t 0:8200 -c 0:zfs $DISK
 
 

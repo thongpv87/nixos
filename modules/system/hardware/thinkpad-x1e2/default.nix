@@ -117,6 +117,9 @@ in {
     {
       services.upower.enable = true;
 
+      boot.supportedFilesystems = [ "zfs" ];
+      networking.hostId = lib.mkDefault "2d22522e";
+
       boot.initrd.availableKernelModules = [ "battery" "thinkpad_acpi" ];
       boot.kernelModules = [ "acpi_call" "coretemp" ];
       boot.extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];

@@ -90,7 +90,6 @@ in {
       (mkIf (cfg.type == "zfs" || cfg.type == "zfs-v2") {
         boot = {
           supportedFilesystems = [ "zfs" ];
-          kernelParams = [ "nohibernate" ];
           zfs.requestEncryptionCredentials = true;
         };
 
@@ -110,6 +109,12 @@ in {
           randomEncryption = true;
         };
       })
+
+      (mkIf
+        ((cfg.type == "zfs" || cfg.type == "zfs-v2") && !cfg.zfs.swap.enable) {
+          boot.kernelParams = [ "nohibernate" ];
+        })
+
       (mkIf (cfg.type == "zfs-v2") (mkMerge [
         {
           thongpv87.impermanence.rollbackDatasets =

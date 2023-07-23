@@ -416,8 +416,19 @@
         }
       ];
 
-      thinkpadConfig-zfs =
-        utils.recursiveMerge [ defaultClientConfig { fs.type = "zfs-v2"; } ];
+      thinkpadConfig-zfs = utils.recursiveMerge [
+        thinkpadConfig
+        {
+          fs = {
+            type = "zfs-v2";
+            hostId = "3c86a521";
+            zfs.swap = {
+              swapPartuuid = "060a1acc-9e3e-4902-9490-330dedc995ad";
+              enable = true;
+            };
+          };
+        }
+      ];
 
     in {
       installMedia = {
@@ -539,7 +550,7 @@
           stateVersion = "23.05";
         };
 
-        thinkpad-zfs = host.mkHost {
+        thinkpadZfs = host.mkHost {
           name = "thinkpad";
           kernelPackage = pkgs.zfs.latestCompatibleLinuxPackages;
           initrdMods = [
