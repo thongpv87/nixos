@@ -1,8 +1,23 @@
 { pkgs, config, lib, ... }:
 with lib;
-let cfg = config.thongpv87.graphical;
+let
+  cfg = config.thongpv87.graphical;
+  my-gsettings-desktop-schemas =
+    let defaultPackages = with pkgs; [ gsettings-desktop-schemas gtk3 ];
+    in pkgs.runCommand "nixos-gsettings-desktop-schemas" {
+      preferLocalBuild = true;
+    } ''
+      mkdir -p $out/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas
+      ${concatMapStrings (pkg: ''
+        cp -rf ${pkg}/share/gsettings-schemas/*/glib-2.0/schemas/*.xml $out/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas
+      '') (defaultPackages)}
+      # cp -f ${pkgs.gnome.gnome-shell}/share/gsettings-schemas/*/glib-2.0/schemas/*.gschema.override $out/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas
+
+      chmod -R a+w $out/share/gsettings-schemas/nixos-gsettings-overrides
+      ${pkgs.glib.dev}/bin/glib-compile-schemas $out/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas/
+    '';
 in {
-  imports = [ ./applications ./wayland ./xorg.nix ./config.nix ];
+  imports = [ ./applications ./wayland ./xorg.nix ./config.nix ./mime.nix ];
 
   options.thongpv87.graphical = {
     enable = mkOption {
@@ -22,9 +37,15 @@ in {
         QT_QPA_PLATFORMTHEME = "breeze-qt5";
         SSH_AUTH_SOCK = "\${XDG_RUNTIME_DIR}/keyring/ssh";
         SSH_ASKPASS = "${pkgs.gnome.seahorse}/libexec/seahorse/ssh-askpass";
+        NIX_GSETTINGS_OVERRIDES_DIR =
+          "${my-gsettings-desktop-schemas}/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas";
       };
 
       packages = with pkgs; [
+        #gsettings-schema
+        glib
+        gsettings-desktop-schemas
+        gtk3
         # qt
         breeze-qt5
 

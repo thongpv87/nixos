@@ -451,9 +451,11 @@
             graphical = {
               enable = true;
               theme = "breeze";
+              mime.enable = true;
               applications = {
                 enable = true;
                 firefox.enable = true;
+                rofi.enable = true;
                 libreoffice.enable = true;
                 anki = {
                   enable = true;
@@ -479,6 +481,7 @@
               direnv.enable = true;
               syncthing.enable = true;
               neomutt.enable = true;
+              emacs.enable = true;
               # taskwarrior = {
               #   enable = false;
               #   server = {

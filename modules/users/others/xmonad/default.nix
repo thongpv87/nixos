@@ -1,14 +1,9 @@
 { config, lib, pkgs, ... }:
 
 with lib;
-let
-  cfg = config.thongpv87.others.xmonad;
-in
-{
-  imports = [
-    ./simple
-    ./rofi
-  ];
+let cfg = config.thongpv87.others.xmonad;
+in {
+  imports = [ ./simple ];
 
   options = {
     thongpv87.others.xmonad = {
@@ -49,9 +44,7 @@ in
         pavucontrol
       ];
 
-      gtk = {
-        enable = true;
-      };
+      gtk = { enable = true; };
 
       qt = {
         enable = true;
@@ -75,18 +68,14 @@ in
         xsettings = {
           Unit.Description = "xsettings daemon";
           Service = {
-            ExecStart = "${pkgs.gnome.gnome-settings-daemon}/libexec/gsd-xsettings";
+            ExecStart =
+              "${pkgs.gnome.gnome-settings-daemon}/libexec/gsd-xsettings";
             Restart = "on-failure";
             RestartSec = 3;
           };
 
           Install.WantedBy = [ "graphical-session.target" ];
         };
-      };
-
-      thongpv87.others.xmonad.rofi = {
-        enable = true;
-        profile = "simple";
       };
     }
 

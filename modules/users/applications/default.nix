@@ -2,7 +2,7 @@
 with lib;
 let cfg = config.thongpv87.applications;
 in {
-  imports = [ ./taskwarrior ./direnv ./syncthing ./neomutt ];
+  imports = [ ./taskwarrior ./direnv ./syncthing ./neomutt ./emacs ];
 
   options.thongpv87.applications = {
     enable = mkOption {

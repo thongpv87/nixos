@@ -1,14 +1,10 @@
 { config, lib, pkgs, ... }:
 with lib;
-let
-  cfg = config.thongpv87.others.xmonad.rofi;
-in
-{
+let cfg = config.thongpv87.graphical.applications.rofi;
+in {
   options = {
-    thongpv87.others.xmonad.rofi = {
-      enable = mkOption {
-        default = false;
-      };
+    thongpv87.graphical.applications.rofi = {
+      enable = mkOption { default = false; };
 
       profile = mkOption {
         type = with types; enum [ "simple" ];
@@ -43,7 +39,7 @@ in
 
       home.activation = {
         myActivationAction = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          $DRY_RUN_CMD cp $HOME/.config/rofi/powermenu/styles/colors.rasi.in $HOME/.config/rofi/powermenu/styles/colors.rasi
+          cp $HOME/.config/rofi/powermenu/styles/colors.rasi.in $HOME/.config/rofi/powermenu/styles/colors.rasi
           chmod 600 $HOME/.config/rofi/powermenu/styles/colors.rasi
         '';
       };
