@@ -74,6 +74,7 @@ in {
     services.xserver = {
       displayManager.gdm.enable = true;
       desktopManager.plasma5 = {
+        runUsingSystemd = true;
         enable = true;
         useQtScaling = true;
       };

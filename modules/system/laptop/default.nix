@@ -73,9 +73,6 @@ in {
                   curr_bright=$(echo $(${pkgs.light}/bin/light -G) | xargs printf "%0.f")
                   ${pkgs.light}/bin/light -S $((curr_bright<max_bright ? curr_bright : max_bright))
                   ;;
-              #  00000001)
-              #    ${pkgs.light}/bin/light -S 100
-                  ;;
               esac
             '';
           };

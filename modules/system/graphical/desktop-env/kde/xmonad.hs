@@ -391,7 +391,8 @@ myManageHook =
         className =? "Gimp" --> doFloat,
         className =? "Xmessage" --> doCenterFloat,
         resource =? "desktop_window" --> doIgnore,
-        resource =? "kdesktop" --> doIgnore,
+        resource =? "kdesktop" --> doFloat,
+        className =? "plasmashell" --> doFloat
         className =? "trayer" --> doIgnore,
         isDialog --> doCenterFloat,
         isFullscreen --> doFullFloat

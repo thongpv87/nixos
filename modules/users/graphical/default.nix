@@ -1,20 +1,8 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}:
+{ pkgs, config, lib, ... }:
 with lib;
-let
-cfg = config.thongpv87.graphical;
-in
-{
-  imports = [
-    ./applications
-    ./wayland
-    ./xorg.nix
-    ./config.nix
-  ];
+let cfg = config.thongpv87.graphical;
+in {
+  imports = [ ./applications ./wayland ./xorg.nix ./config.nix ];
 
   options.thongpv87.graphical = {
     enable = mkOption {
@@ -22,26 +10,23 @@ in
       default = false;
     };
 
-
     theme = mkOption {
-      type = with types; enum [ "arc-dark" "materia-dark" ];
-      description = "Enable wayland";
-      default = "arc-dark";
+      type = with types; enum [ "breeze" ];
+      default = "breeze";
     };
   };
 
   config = mkIf cfg.enable {
     home = {
       sessionVariables = {
-        QT_QPA_PLATFORMTHEME = "qt5ct";
+        QT_QPA_PLATFORMTHEME = "breeze-qt5";
         SSH_AUTH_SOCK = "\${XDG_RUNTIME_DIR}/keyring/ssh";
         SSH_ASKPASS = "${pkgs.gnome.seahorse}/libexec/seahorse/ssh-askpass";
       };
 
       packages = with pkgs; [
         # qt
-        libsForQt5.qtstyleplugin-kvantum
-        qt5ct
+        breeze-qt5
 
         xdg-utils
 
@@ -81,13 +66,9 @@ in
     gtk = {
       enable = true;
       theme = mkMerge [
-        (mkIf (cfg.theme == "arc-dark") {
-          package = with pkgs; arc-theme;
-          name = "Arc-Dark";
-        })
-        (mkIf (cfg.theme == "materia-dark") {
-          package = with pkgs; materia-theme;
-          name = "Materia-dark";
+        (mkIf (cfg.theme == "breeze") {
+          package = with pkgs; breeze-gtk;
+          name = "Breeze";
         })
       ];
 
@@ -97,7 +78,7 @@ in
       };
 
       font = {
-        # already installed in profile
+        # already installed in profila
         package = null;
         name = "Berkeley Mono Variable";
         size = 10;
@@ -115,7 +96,7 @@ in
 
     systemd.user.sessionVariables = {
       # So graphical services are themed (eg trays)
-      QT_QPA_PLATFORMTHEME = "qt5ct";
+      QT_QPA_PLATFORMTHEME = "breeze-qt5";
       PATH = builtins.concatStringsSep ":" [
         # Following two needed for themes from trays
         # "${pkgs.libsForQt5.qtstyleplugin-kvantum}/bin"
@@ -133,33 +114,12 @@ in
       ];
 
       configFile = {
-        "qt5ct/qt5ct.conf" = {
-          text = ''
-            [Appearance]
-            icon_theme=la-capitaine-icon-theme
-            style=kvantum-dark
-          '';
-        };
-
-        "Kvantum/kvantum.kvconfig" = mkMerge [
-          (mkIf (cfg.theme == "arc-dark") { text = "theme=KvArcDark"; })
-          (mkIf (cfg.theme == "materia-dark") { text = "theme=MateriaDark"; })
-        ];
-
-        "Kvantum/ArcDark" = {
-          source = "${pkgs.arc-kde-theme}/share/Kvantum/ArcDark";
-        };
-
-        "Kvantum/MateriaDark" = {
-          source = "${pkgs.materia-kde-theme}/share/Kvantum/MateriaDark";
-        };
-
         "wallpapers" = { source = ./wallpapers; };
 
         "kdeglobals" = {
           text = ''
             [General]
-            TerminalApplication=${pkgs.foot}/bin/foot
+            TerminalApplication=${pkgs.alacritty}/bin/alacritty
           '';
         };
       };

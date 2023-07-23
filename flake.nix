@@ -450,7 +450,7 @@
           userConfig = {
             graphical = {
               enable = true;
-              theme = "arc-dark";
+              theme = "breeze";
               applications = {
                 enable = true;
                 firefox.enable = true;
@@ -469,9 +469,9 @@
                 screenlock.enable = true;
               };
               xorg = {
-                enable = false;
-                type = "dwm";
-                screenlock.enable = true;
+                enable = true;
+                type = "xmonad";
+                screenlock.enable = false;
               };
             };
             applications = {
