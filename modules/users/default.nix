@@ -1,9 +1,4 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}: {
+{ pkgs, config, lib, ... }: {
   imports = [
     ./applications
     ./graphical
@@ -17,6 +12,7 @@
     ./pijul
     ./secrets
     ./weechat
+    ./terminal
     ./others
-   ];
-  }
+  ];
+}

@@ -490,6 +490,15 @@
               #   };
               # };
             };
+
+            terminal = {
+              enable = true;
+              tmux = {
+                enable = true;
+                shell = "zsh";
+              };
+            };
+
             secrets.identityPaths = [
               "~/.ssh/id_rsa"
               # secrets.age.user.thongpv87.privateKeyPath
