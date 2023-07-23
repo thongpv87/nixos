@@ -4,22 +4,6 @@ with lib;
 let
   cfg = config.thongpv87.others.xmonad.simple;
 
-  selected-nerdfonts = pkgs.nerdfonts.overrideAttrs (o: {
-    version = "2.1.0";
-    fonts = [
-      "FiraCode"
-      "FiraMono"
-      "SourceCodePro"
-      "DejaVuSansMono"
-      "DroidSansMono"
-      "Inconsolata"
-      "Iosevka"
-      "RobotoMono"
-      "Terminus"
-    ];
-    enableWindowsFonts = false;
-  });
-
   shellScripts = pkgs.stdenv.mkDerivation {
     name = "myShellScripts";
     src = ./bin;
@@ -31,10 +15,11 @@ let
     '';
   };
   statusbar = pkgs.haskellPackages.callCabal2nix "xmobar" ./xmobar { };
-in
-{
+in {
   options = {
-    thongpv87.others.xmonad.simple = { enable = mkOption { default = false; }; };
+    thongpv87.others.xmonad.simple = {
+      enable = mkOption { default = false; };
+    };
   };
 
   config = mkIf cfg.enable (mkMerge [{

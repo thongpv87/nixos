@@ -2,17 +2,6 @@
 with lib;
 let
   cfg = config.thongpv87.system.hardware.thinkpad-x1e2;
-  my-bamboo = pkgs.ibus-engines.bamboo.overrideAttrs (oldAttrs: {
-    version = "v0.8.1";
-    src = pkgs.fetchFromGitHub {
-      owner = "BambooEngine";
-      repo = "ibus-bamboo";
-      rev = "c0001c571d861298beb99463ef63816b17203791";
-      sha256 = "sha256-7qU3ieoRPfv50qM703hEw+LTSrhrzwyzCvP9TOLTiDs=";
-    };
-    buildInputs = oldAttrs.buildInputs ++ [ pkgs.glib pkgs.gtk3 ];
-  });
-
   hybridVaApiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
 in {
   options.thongpv87.system.hardware.thinkpad-x1e2 = {
@@ -74,7 +63,7 @@ in {
       time.timeZone = mkForce "Asia/Ho_Chi_Minh";
       i18n.inputMethod = {
         enabled = "ibus"; # "fcitx";
-        ibus.engines = with pkgs.ibus-engines; [ my-bamboo ];
+        ibus.engines = with pkgs.ibus-engines; [ bamboo ];
 
         # fcitx.engines = [ pkgs.fcitx-engines.unikey ];
         # fcitx5.addons = [ pkgs.fcitx5-unikey ];

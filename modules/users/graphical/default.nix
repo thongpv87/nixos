@@ -31,7 +31,7 @@ in {
         xdg-utils
 
         # Fonts
-        #(nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+        selected-nerdfonts
         noto-fonts-emoji
         google-fonts
 

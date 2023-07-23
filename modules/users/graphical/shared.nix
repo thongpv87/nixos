@@ -19,8 +19,8 @@ in {
         xdg-utils
 
         # Fonts
-        (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
         noto-fonts-emoji
+        selected-nerdfonts
         google-fonts
         noto-fonts-cjk # Chinese
         dejavu_fonts

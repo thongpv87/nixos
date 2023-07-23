@@ -2,22 +2,6 @@
 with lib;
 let
   cfg = config.thongpv87.graphical.desktop-env.kde;
-  selected-nerdfonts = pkgs.nerdfonts.overrideAttrs (o: {
-    version = "2.1.0";
-    fonts = [
-      "FiraCode"
-      "FiraMono"
-      "SourceCodePro"
-      "DejaVuSansMono"
-      "DroidSansMono"
-      "Inconsolata"
-      "Iosevka"
-      "RobotoMono"
-      "Terminus"
-    ];
-    enableWindowsFonts = false;
-  });
-
   shellScripts = pkgs.stdenv.mkDerivation {
     name = "myShellScripts";
     src = ./bin;
