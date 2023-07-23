@@ -112,7 +112,8 @@
       pkgs = import patchedPkgs {
         inherit system overlays;
         config = {
-          permittedInsecurePackages = [ "electron-9.4.4" ];
+          permittedInsecurePackages =
+            [ "electron-9.4.4" "qtwebkit-5.212.0-alpha4" ];
           allowUnfree = true;
         };
       };
@@ -389,7 +390,7 @@
         }
       ];
 
-      laptopConfig = utils.recursiveMerge [
+      thinkpadConfig = utils.recursiveMerge [
         defaultClientConfig
         {
           boot.type = "efi";
@@ -410,6 +411,7 @@
             };
           };
 
+          dropbox.enable = true;
           graphical.desktop-env.kde.enable = true;
         }
       ];
@@ -531,7 +533,7 @@
       };
 
       nixosConfigurations = {
-        laptop = host.mkHost {
+        thinkpad = host.mkHost {
           name = "thinkpad";
           kernelPackage = lib.mkForce pkgs.linuxPackages;
           initrdMods = [
@@ -547,7 +549,7 @@
           kernelParams =
             [ "quiet" "msr.allow_writes=on" "cpuidle.governor=teo" ];
           kernelPatches = [ ];
-          systemConfig = laptopConfig;
+          systemConfig = thinkpadConfig;
           cpuCores = 12;
           stateVersion = "23.05";
         };

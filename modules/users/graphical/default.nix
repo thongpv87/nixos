@@ -26,7 +26,7 @@ in {
     };
 
     theme = mkOption {
-      type = with types; enum [ "breeze" ];
+      type = with types; enum [ "breeze" "pop" ];
       default = "breeze";
     };
   };
@@ -70,6 +70,10 @@ in {
         jdpkgs.la-capitaine-icon-theme
 
         gnome.seahorse
+
+        pop-gtk-theme
+        numix-icon-theme
+        pop-icon-theme
       ];
     };
 
@@ -84,12 +88,31 @@ in {
 
     fonts.fontconfig.enable = true;
 
+    qt = {
+      enable = true;
+      platformTheme = "gnome";
+      style = mkMerge [
+        (mkIf (cfg.theme == "breeze") {
+          package = with pkgs; breeze-gtk;
+          name = "Breeze";
+        })
+        (mkIf (cfg.theme == "pop") {
+          package = with pkgs; pop-gtk-theme;
+          name = "pop";
+        })
+      ];
+    };
+
     gtk = {
       enable = true;
       theme = mkMerge [
         (mkIf (cfg.theme == "breeze") {
           package = with pkgs; breeze-gtk;
           name = "Breeze";
+        })
+        (mkIf (cfg.theme == "pop") {
+          package = with pkgs; pop-gtk-theme;
+          name = "pop";
         })
       ];
 

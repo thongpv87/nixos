@@ -1,9 +1,4 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}: {
+{ pkgs, config, lib, ... }: {
   imports = [
     ./syncthing
     ./monitoring
@@ -17,5 +12,6 @@
     ./microbin
     ./languagetool
     ./calibre
+    ./dropbox
   ];
 }

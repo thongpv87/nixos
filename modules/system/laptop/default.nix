@@ -12,7 +12,21 @@ in {
   };
 
   config = mkIf (cfg.enable) {
-    environment.systemPackages = with pkgs; [ acpid powertop ];
+    environment.systemPackages = with pkgs; [
+      acpid
+      powertop
+      acpi
+      lm_sensors
+      dosfstools
+      gptfdisk
+      iputils
+      usbutils
+      util-linux
+
+      wirelesstools
+      pciutils
+      usbutils
+    ];
 
     programs = { light.enable = true; };
 
@@ -30,6 +44,10 @@ in {
     # https://www.kernel.org/doc/html/latest/admin-guide/pm/sleep-states.html
     # Suspend mode -> Hybrid-Sleep. This enables hybrid-sleep then hibernate
     services = {
+      # better timesync for unstable internet connections
+      chrony.enable = true;
+      timesyncd.enable = false;
+
       # Hibernate on low battery. from: https://wiki.archlinux.org/title/laptop#Hibernate_on_low_battery_level
       udev.extraRules = ''
         # Suspend the system when battery level drops to 5% or lower

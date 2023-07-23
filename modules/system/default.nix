@@ -22,6 +22,7 @@
     ./android
     ./windows
     ./desktop
+    ./packages
     (import ./hardware { inherit inputs patchedPkgs; })
     ./users
     ./fs

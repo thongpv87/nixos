@@ -134,6 +134,7 @@ in {
         "options iwlwifi power_save=1 uapsd_disable=1"
       ];
 
+      services.fprintd.enable = true;
       # Gnome 40 introduced a new way of managing power, without tlp.
       # However, these 2 services clash when enabled simultaneously.
       # https://github.com/NixOS/nixos-hardware/issues/260
