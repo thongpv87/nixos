@@ -111,8 +111,12 @@ in {
       })
 
       (mkIf
-        ((cfg.type == "zfs" || cfg.type == "zfs-v2") && !cfg.zfs.swap.enable) {
-          boot.kernelParams = [ "nohibernate" ];
+        ((cfg.type == "zfs" || cfg.type == "zfs-v2") && cfg.zfs.swap.enable) {
+          boot.zfs = {
+            allowHibernation = true;
+            forceImportRoot = false;
+            forceImportAll = false;
+          };
         })
 
       (mkIf (cfg.type == "zfs-v2") (mkMerge [
