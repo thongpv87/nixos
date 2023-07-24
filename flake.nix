@@ -261,7 +261,7 @@
           fs = {
             hostId = "2d360981";
             zfs.swap = {
-              swapPartuuid = "52c2b662-0b7b-430c-9a10-068acbe9d15d";
+              swapPartuuid = "5ab489de-583d-4e5b-a6b4-3c08e799a217";
               enable = true;
             };
           };
@@ -423,7 +423,7 @@
             type = "zfs-v2";
             hostId = "3c86a521";
             zfs.swap = {
-              swapPartuuid = "060a1acc-9e3e-4902-9490-330dedc995ad";
+              swapPartuuid = "219fbc7c-2149-414a-8dd3-5477574886cf";
               enable = true;
             };
           };

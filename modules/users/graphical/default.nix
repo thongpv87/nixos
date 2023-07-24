@@ -34,7 +34,7 @@ in {
   config = mkIf cfg.enable {
     home = {
       sessionVariables = {
-        QT_QPA_PLATFORMTHEME = "breeze-qt5";
+        QT_QPA_PLATFORMTHEME = mkForce "breeze-qt5";
         SSH_AUTH_SOCK = "\${XDG_RUNTIME_DIR}/keyring/ssh";
         SSH_ASKPASS = "${pkgs.gnome.seahorse}/libexec/seahorse/ssh-askpass";
         NIX_GSETTINGS_OVERRIDES_DIR =
