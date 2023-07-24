@@ -3,13 +3,12 @@ with lib;
 let
   cfg = config.thongpv87.graphical.mime;
   textEditor = [ "nvim.desktop" "emacsclient.desktop" "emacs.desktop" ];
-  browser = [ "google-chrome.desktop" ];
+  browser = [ "firefox.desktop" ];
   fileManager = [ "org.kde.dolphin.desktop" ];
-  musicPlayer = [ "rhythmbox.desktop" ];
+  musicPlayer = [ "org.kde.elisa.desktop" ];
   videoPlayer = [ "vlc.desktop" ];
-  imageViewer = [ "vimv.desktop" "org.gnome.Shotwell-Viewer.desktop" ];
-  documentViewer =
-    [ "okularApplication_pdf.desktop" "org.gnome.Evince.desktop" ];
+  imageViewer = [ "vimv.desktop" "org.kde.gwenview.desktop" ];
+  documentViewer = [ "org.kde.okular.desktop" ];
   office = [ "writer.desktop" ];
   postman = [ "Postman.desktop" ];
   terminal = [ "alacritty.desktop" ];
@@ -19,15 +18,7 @@ in {
   };
 
   config = mkIf (config.thongpv87.graphical.enable && cfg.enable) (mkMerge [{
-    home.packages = with pkgs; [
-      shotwell
-      rhythmbox
-      vlc
-      gnome.nautilus
-      gnome.evince # libreoffice
-      alacritty
-      okular
-    ];
+    home.packages = with pkgs; [ vlc alacritty okular ];
 
     xdg = {
       mime.enable = true;
