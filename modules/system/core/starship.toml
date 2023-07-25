@@ -2,8 +2,12 @@
 symbol = " "
 
 [character]
-success_symbol = "[❯](bold purple)"
-vicmd_symbol = "[❮](bold purple)"
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+vicmd_symbol = "[✎](blink bold #ff6188)"
+
+# success_symbol = "[❯](bold purple)"
+# vicmd_symbol = "[❮](bold purple)"
 
 [battery]
 full_symbol = ""
