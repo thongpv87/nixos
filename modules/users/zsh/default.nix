@@ -31,6 +31,7 @@ in {
         ssh = "TERM=xterm-256color ssh";
         irssi = "TERM=xterm-256color irssi";
         em = "emacsclient -t";
+        vi = "nvim";
       };
 
       completionInit = ''
