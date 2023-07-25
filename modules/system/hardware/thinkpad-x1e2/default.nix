@@ -104,10 +104,10 @@ in {
       console.useXkbConfig = true;
 
       environment.variables = {
-        VDPAU_DRIVER =
-          lib.mkIf config.hardware.opengl.enable (lib.mkDefault "va_gl");
-        LIBVA_DRIVER_NAME = "nvidia";
-        MOZ_DISABLE_RDD_SANDBOX = "1";
+        # VDPAU_DRIVER =
+        #   lib.mkIf config.hardware.opengl.enable (lib.mkDefault "va_gl");
+        # LIBVA_DRIVER_NAME = "nvidia";
+        # MOZ_DISABLE_RDD_SANDBOX = "1";
       };
       hardware.cpu.intel.updateMicrocode =
         lib.mkDefault config.hardware.enableRedistributableFirmware;
@@ -243,13 +243,17 @@ in {
 
         levels = [
           [ 0 0 44 ]
-          [ 1 44 50 ]
-          [ 2 47 55 ]
-          [ 3 51 60 ]
-          [ 4 54 65 ]
-          [ 5 58 70 ]
-          [ 6 60 75 ]
-          [ 7 59 85 ]
+          [ 4 44 50 ]
+          [ 5 47 55 ]
+          [ 6 51 60 ]
+          [
+            7
+            54
+            65
+          ]
+          # [ 5 58 70 ]
+          # [ 6 60 75 ]
+          # [ 7 59 85 ]
           [ "level auto" 80 32767 ]
         ];
       };
@@ -287,8 +291,6 @@ in {
       })
 
       (mkIf (cfg.xorg.gpuMode == "hybrid") {
-        environment.systemPackages = [ nvidia-offload ];
-
         hardware = {
           nvidia = {
             powerManagement = {
@@ -297,8 +299,14 @@ in {
             };
             nvidiaPersistenced = true;
             modesetting.enable = true;
+            forceFullCompositionPipeline = true;
             prime = {
-              offload.enable = true;
+              offload = {
+                enable = true;
+                enableOffloadCmd = true;
+              };
+              reverseSync.enable = true;
+
               intelBusId = "PCI:0:2:0";
               nvidiaBusId = "PCI:1:0:0";
             };
@@ -310,9 +318,6 @@ in {
             Option "DRI" "3"
             Option "TearFree" "true"
           '';
-          displayManager.sessionCommands = ''
-            xrandr --setprovideroutputsource NVIDIA-G0 modesetting
-          '';
         };
       })
 
@@ -320,6 +325,7 @@ in {
         hardware = {
           nvidia = {
             modesetting.enable = true;
+            forceFullCompositionPipeline = true;
             prime = {
               sync.enable = true;
               intelBusId = "PCI:0:2:0";
@@ -331,7 +337,6 @@ in {
         services.xserver = {
           videoDrivers = [ "nvidia" ];
           screenSection = ''
-            Option         "metamodes" "nvidia-auto-select +0+0 {ForceFullCompositionPipeline=On}"
             Option         "AllowIndirectGLXProtocol" "off"
             Option         "TripleBuffer" "on"
           '';
