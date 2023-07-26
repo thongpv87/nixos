@@ -1,4 +1,5 @@
-pkgs: neovimConfiguration: let
+pkgs: neovimConfiguration:
+let
   configModule = {
     # Add any custom options (and feel free to upstream them!)
     # options = ...
@@ -76,12 +77,12 @@ pkgs: neovimConfiguration: let
   };
 in {
   dotfiles = neovimConfiguration {
-    modules = [configModule];
+    modules = [ configModule ];
     inherit pkgs;
   };
 
   neovimJD = neovimConfiguration {
-    modules = [configModule];
+    modules = [ configModule ];
     inherit pkgs;
   };
 }

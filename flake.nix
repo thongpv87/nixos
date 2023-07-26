@@ -411,7 +411,7 @@
             };
           };
 
-          dropbox.enable = true;
+          dropbox.enable = false;
           graphical.desktop-env.kde.enable = true;
         }
       ];

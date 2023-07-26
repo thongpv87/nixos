@@ -230,7 +230,7 @@ in {
       boot.kernelModules = [ "acpi_call" "coretemp" ];
 
       services.thinkfan = {
-        enable = true;
+        enable = false;
         fans = [{
           type = "tpacpi";
           query = "/proc/acpi/ibm/fan";
