@@ -198,8 +198,8 @@ in {
             # Enable audio power saving for Intel HDA, AC97 devices (timeout in secs).
             # A value of 0 disables, >=1 enables power saving (recommended: 1).
             # Default: 0 (AC), 1 (BAT)
-            SOUND_POWER_SAVE_ON_AC = mkForce 0;
-            SOUND_POWER_SAVE_ON_BAT = mkForce 0;
+            SOUND_POWER_SAVE_ON_AC = mkForce 1;
+            SOUND_POWER_SAVE_ON_BAT = mkForce 1;
 
             # Radio device switching
             DEVICES_TO_DISABLE_ON_BAT_NOT_IN_USE = mkForce "bluetooth wwan";
