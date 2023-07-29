@@ -404,7 +404,8 @@
             enable = true;
             fancontrol = "manual";
             undervolt = true;
-            cpuScaling = "acpi_cpufreq";
+            # cpuScaling = "acpi_cpufreq";
+            cpuScaling = "intel_cpufreq";
             xorg = {
               enable = true;
               gpuMode = "integrated";
