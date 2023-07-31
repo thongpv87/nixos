@@ -34,6 +34,8 @@ in {
         historyControl = [ "ignoredups" ];
         shellAliases = aliases;
         initExtra = ''
+          # enable vim navigation
+          set -o vi
           eval "$(starship init bash)"
         '';
       };
