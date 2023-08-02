@@ -20,6 +20,16 @@ in {
     zfs = {
       userPool = mkEnableOption "a user pool";
 
+      autoSnapshot = {
+        enable = mkOption { default = false; };
+        weekly = mkOption { default = 4; };
+        monthly = mkOption { default = 12; };
+        daily = mkOption { default = 7; };
+        hourly = mkOption { default = 24; };
+        frequent = mkOption { default = 4; };
+        flags = mkOption { default = "-k -p --utc"; };
+      };
+
       swap = {
         enable = mkEnableOption "zfs swap";
 
@@ -96,6 +106,7 @@ in {
         services.zfs.trim.enable = true;
         services.zfs.autoScrub.enable = true;
         services.zfs.autoScrub.pools = [ "rpool" ];
+        services.zfs.autoSnapshot = cfg.zfs.autoSnapshot;
 
         networking.hostId = cfg.hostId;
 

@@ -423,9 +423,21 @@
           fs = {
             type = "zfs-v2";
             hostId = "3c86a521";
-            zfs.swap = {
-              swapPartuuid = "219fbc7c-2149-414a-8dd3-5477574886cf";
-              enable = true;
+            zfs = {
+              autoSnapshot = {
+                enable = true;
+                weekly = 4;
+                monthly = 12;
+                daily = 7;
+                hourly = 48;
+                frequent = 8;
+                flags = "-k -p --utc";
+              };
+
+              swap = {
+                swapPartuuid = "219fbc7c-2149-414a-8dd3-5477574886cf";
+                enable = true;
+              };
             };
           };
         }
