@@ -48,7 +48,19 @@ in {
         message = "To enable wayland for user, it must be enabled for system";
       }];
 
-      home.packages = with pkgs; [ wofi ];
+      programs = {
+        wofi = {
+          enable = true;
+          settings = {
+            layer = "top";
+            allow_images = true;
+            allow_markup = true;
+            mode = "drun";
+            matching = "fuzzy";
+            insensitive = true;
+          };
+        };
+      };
 
       # home.file = {
       #   ".winitrc" = {
