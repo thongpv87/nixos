@@ -57,7 +57,8 @@ in {
   };
 
   config = mkIf cfg.enable (mkMerge [
-    # mkIf (cfg.type == "xmonad")
+    mkIf
+    (cfg.type == "xmonad")
     {
       assertions = [
         {

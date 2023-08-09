@@ -31,6 +31,8 @@ in {
       };
     };
 
+    programs.xwayland.enable = true;
+
     # security.pam.services.swaylock = mkIf (cfg.swaylockPam) {};
     security.pam.services.swaylock = { };
     security.pam.services.waylock = mkIf (cfg.waylockPam) { };

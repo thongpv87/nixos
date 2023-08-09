@@ -390,7 +390,7 @@
         }
       ];
 
-      thinkpadConfig = utils.recursiveMerge [
+      thinkpad-config = utils.recursiveMerge [
         defaultClientConfig
         {
           boot.type = "efi";
@@ -403,7 +403,7 @@
           system.hardware.thinkpad-x1e2 = {
             enable = true;
             fancontrol = "manual";
-            undervolt = true;
+            undervolt = false;
             # cpuScaling = "acpi_cpufreq";
             cpuScaling = "intel_cpufreq";
             xorg = {
@@ -417,8 +417,8 @@
         }
       ];
 
-      thinkpadConfig-zfs = utils.recursiveMerge [
-        thinkpadConfig
+      thinkpad-config-zfs = utils.recursiveMerge [
+        thinkpad-config
         {
           fs = {
             type = "zfs-v2";
@@ -441,6 +441,11 @@
             };
           };
         }
+      ];
+
+      thinkpad-config-zfs-wayland = utils.recursiveMerge [
+        thinkpad-config-zfs
+        { system.hardware.thinkpad-x1e2 = { xorg.enable = false; }; }
       ];
 
     in {
@@ -469,7 +474,7 @@
                 rofi.enable = true;
                 libreoffice.enable = true;
                 anki = {
-                  enable = true;
+                  enable = false;
                   sync = false;
                 };
                 kdeconnect.enable = false;
@@ -479,7 +484,7 @@
                 type = "dwl";
                 background.enable = true;
                 statusbar.enable = true;
-                screenlock.enable = true;
+                screenlock.enable = false;
               };
               xorg = {
                 enable = true;
@@ -524,7 +529,7 @@
             };
             zsh.enable = true;
             ssh.enable = true;
-            weechat.enable = true;
+            weechat.enable = false;
             office365 = {
               enable = false;
               onedriver.enable = false; # pkg currently broken
@@ -558,7 +563,7 @@
           kernelParams =
             [ "quiet" "msr.allow_writes=on" "cpuidle.governor=teo" ];
           kernelPatches = [ ];
-          systemConfig = thinkpadConfig;
+          systemConfig = thinkpad-config;
           cpuCores = 12;
           stateVersion = "23.05";
         };
@@ -579,7 +584,7 @@
           kernelParams =
             [ "quiet" "msr.allow_writes=on" "cpuidle.governor=teo" ];
           kernelPatches = [ ];
-          systemConfig = thinkpadConfig-zfs;
+          systemConfig = thinkpad-config-zfs;
           cpuCores = 12;
           stateVersion = "23.05";
         };
