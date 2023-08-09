@@ -38,6 +38,7 @@ in {
 
       python3Packages.pygments
       emacsPackages.pdf-tools
+      selected-nerdfonts
     ];
 
     programs = {
