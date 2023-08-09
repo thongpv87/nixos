@@ -19,12 +19,12 @@ in {
       builtins.substring ((builtins.stringLength config.home.homeDirectory) + 1)
       (builtins.stringLength config.xdg.configHome) config.xdg.configHome;
   in {
-    home.packages = with pkgs; [ any-nix-shell nix-zsh-completions ];
+    home.packages = with pkgs; [ any-nix-shell ];
     programs.zsh = {
       enable = true;
       enableAutosuggestions = true;
       historySubstringSearch.enable = true;
-      enableSyntaxHighlighting = true;
+      syntaxHighlighting.enable = true;
       enableCompletion = true;
 
       shellAliases = {

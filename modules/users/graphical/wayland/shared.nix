@@ -93,6 +93,7 @@ in {
 
       pkg = mkOption {
         type = types.package;
+        default = pkgs.swaybg;
         description = "Package to use for swaybg";
       };
 
@@ -117,7 +118,6 @@ in {
 
       type = mkOption {
         type = types.enum [ "waylock" "swaylock" ];
-        default = "waylock";
         description = "Which screen locking software to use";
       };
 
@@ -137,12 +137,7 @@ in {
 
       pkg = mkOption {
         type = types.package;
-        default = if isDwl then
-          builtins.trace "override waybar" pkgs.waybar.override {
-            swaySupport = false;
-          }
-        else
-          builtins.trace "standard waybar" pkgs.waybar;
+        default = pkgs.waybar.override { swaySupport = false; };
         description = "Waybar package";
       };
     };
@@ -159,8 +154,6 @@ in {
   config = mkIf cfg.enable (mkMerge [
     {
       home.packages = with pkgs; [
-        foot
-        bemenu
         wl-clipboard
         wlr-randr
         wdisplays

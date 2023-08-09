@@ -26,8 +26,7 @@ in {
             enable = true;
             devices = [ "nodev" ];
             efiSupport = true;
-            useOSProber = true;
-            version = 2;
+            useOSProber = false;
             extraEntries = ''
               menuentry "Reboot" {
                 reboot
@@ -36,10 +35,6 @@ in {
                 halt
               }
             '';
-            extraConfig = if (config.thongpv87.framework.enable) then
-              "i915.enable_psr=0"
-            else
-              "";
           };
         };
       };
@@ -49,7 +44,6 @@ in {
         loader = {
           grub = {
             enable = true;
-            version = 2;
             device = cfg.grubDevice;
             efiSupport = false;
           };

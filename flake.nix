@@ -34,7 +34,7 @@
 
     # Secrets
     # secrets.url = "git+ssh://git@github.com/jordanisaacs/secrets.git?ref=main";
-    secrets.url = "git+file:///home/thongpv87/ws/secret";
+    secrets.url = "git+file:///home/thongpv87/Code/secret";
     secrets.inputs.nixpkgs.follows = "nixpkgs";
 
     agenix.url = "github:ryantm/agenix";
@@ -445,7 +445,10 @@
 
       thinkpad-config-zfs-wayland = utils.recursiveMerge [
         thinkpad-config-zfs
-        { system.hardware.thinkpad-x1e2 = { xorg.enable = false; }; }
+        {
+          system.hardware.thinkpad-x1e2 = { xorg.enable = false; };
+          graphical.desktop-env.kde.enable = false;
+        }
       ];
 
     in {
@@ -480,14 +483,17 @@
                 kdeconnect.enable = false;
               };
               wayland = {
-                enable = false;
-                type = "dwl";
-                background.enable = true;
-                statusbar.enable = true;
+                enable = true;
+                type = "hyprland";
+                background = {
+                  enable = true;
+                  mode = "fit";
+                };
+                statusbar = { enable = false; };
                 screenlock.enable = false;
               };
               xorg = {
-                enable = true;
+                enable = false;
                 type = "xmonad";
                 screenlock.enable = false;
               };
@@ -568,7 +574,7 @@
           stateVersion = "23.05";
         };
 
-        thinkpadZfs = host.mkHost {
+        thinkpad-zfs = host.mkHost {
           name = "thinkpad";
           kernelPackage = pkgs.zfs.latestCompatibleLinuxPackages;
           initrdMods = [
@@ -585,6 +591,27 @@
             [ "quiet" "msr.allow_writes=on" "cpuidle.governor=teo" ];
           kernelPatches = [ ];
           systemConfig = thinkpad-config-zfs;
+          cpuCores = 12;
+          stateVersion = "23.05";
+        };
+
+        thinkpad-zfs-wayland = host.mkHost {
+          name = "thinkpad";
+          kernelPackage = pkgs.zfs.latestCompatibleLinuxPackages;
+          initrdMods = [
+            "xhci_pci"
+            "nvme"
+            "usb_storage"
+            "sd_mod"
+            "battery"
+            "thinkpad_acpi"
+            "i915"
+          ];
+          kernelMods = [ "kvm-intel" "acpi_call" "coretemp" ];
+          kernelParams =
+            [ "quiet" "msr.allow_writes=on" "cpuidle.governor=teo" ];
+          kernelPatches = [ ];
+          systemConfig = thinkpad-config-zfs-wayland;
           cpuCores = 12;
           stateVersion = "23.05";
         };

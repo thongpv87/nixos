@@ -1,11 +1,7 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}: {
+{ pkgs, config, lib, ... }: {
   imports = [
-    ./compositor.nix
+    #./compositor.nix
+    ./hyprland.nix
     ./shared.nix
   ];
 }

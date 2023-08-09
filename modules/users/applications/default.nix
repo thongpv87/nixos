@@ -50,7 +50,7 @@ in {
       nixfmt
 
       # nixpkgs
-      nixpkgs-review
+      # nixpkgs-review
 
       # terminal session recorder
       asciinema
