@@ -8,16 +8,13 @@ with lib; {
       type = mkDefault null;
 
       background = {
-        enable = mkDefault false;
+        enable = mkDefault true;
         image = mkDefault ./wallpapers/peacefulmtn.jpg;
         mode = mkDefault "fill";
         pkg = mkDefault pkgs.swaybg;
       };
 
-      statusbar = {
-        enable = mkDefault false;
-        pkg = mkDefault pkgs.waybar;
-      };
+      statusbar = { enable = mkDefault false; };
 
       screenlock = { enable = mkDefault false; };
     };

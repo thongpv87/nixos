@@ -4,63 +4,6 @@ let
   cfg = config.thongpv87.graphical.wayland;
   systemCfg = config.machineData.systemConfig;
   isLaptop = systemCfg ? framework && systemCfg.framework.enable;
-  isDwl = config.thongpv87.graphical.wayland.type == "dwl";
-
-  dwlTags = pkgs.writeShellApplication {
-    name = "dwl-waybar";
-    runtimeInputs = with pkgs; [ gnugrep inotify-tools coreutils gnused gawk ];
-    text = ''
-      set -e
-      echo '{"text": "| 1!| 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |"}'
-      fname="/tmp/dwltags";
-
-      monitor="''${1}"
-
-      while true
-      do
-          while [ ! -f $fname ]
-          do
-              inotifywait -qqe create "$(dirname $fname)"
-          done;
-
-          inotifywait -qqe modify $fname
-
-
-          output="$(grep  "''${monitor}" "''${fname}" | tail -n6)"
-          title="$(echo   "''${output}" | grep '^[[:graph:]]* title'  | cut -d ' ' -f 3-  | sed s/\"//g)" # Replace quotes - prevent waybar crash
-          layout="$(echo  "''${output}" | grep '^[[:graph:]]* layout' | cut -d ' ' -f 3- )"
-
-          # Get the tag bit mask as a decimal
-          activetags="$(echo "''${output}"   | grep '^[[:graph:]]* tags' | awk '{print $3}')"
-          selectedtags="$(echo "''${output}" | grep '^[[:graph:]]* tags' | awk '{print $4}')"
-          urgenttags="$(echo "''${output}"   | grep '^[[:graph:]]* tags' | awk '{print $6}')"
-
-          n=""
-          for i in {0..8};
-          do
-              mask=$((1<<i))
-              if (( "$selectedtags" & mask))
-              then
-                n="''${n}|*$((i+1))"
-              else
-                if (( "$activetags" & mask ));
-                then
-                    n="''${n}|+$((i+1))"
-                else
-                    n="''${n}| $((i+1))"
-                fi
-              fi
-              if (( "$urgenttags" & mask ));
-              then
-                  n="$n!"
-              else
-                  n="$n "
-              fi
-          done
-          printf -- '{"text": "%s| %s %s"}\n' "$n" "$layout" "$title"
-      done
-    '';
-  };
 
   screenNames = if isLaptop then [ "eDP-1" ] else [ "HDMI-A-1" "DP-1" ];
 
@@ -137,16 +80,8 @@ in {
 
       pkg = mkOption {
         type = types.package;
-        default = pkgs.waybar.override { swaySupport = false; };
+        default = pkgs.waybar-hyprland;
         description = "Waybar package";
-      };
-    };
-
-    foot = {
-      theme = mkOption {
-        type = with types; enum [ "tokyo-night" "dracula" ];
-        description = "Theme for foot";
-        default = "tokyo-night";
       };
     };
   };
@@ -158,67 +93,8 @@ in {
         wlr-randr
         wdisplays
         libappindicator-gtk3
-        mako
+        dunst
       ];
-
-      xdg.configFile = {
-        "foot/foot.ini" = let
-          dracula = ''
-            alpha=1.0
-            foreground=f8f8f2
-            background=282a36
-            regular0=000000  # black
-            regular1=ff5555  # red
-            regular2=50fa7b  # green
-            regular3=f1fa8c  # yellow
-            regular4=bd93f9  # blue
-            regular5=ff79c6  # magenta
-            regular6=8be9fd  # cyan
-            regular7=bfbfbf  # white
-            bright0=4d4d4d   # bright black
-            bright1=ff6e67   # bright red
-            bright2=5af78e   # bright green
-            bright3=f4f99d   # bright yellow
-            bright4=caa9fa   # bright blue
-            bright5=ff92d0   # bright magenta
-            bright6=9aedfe   # bright cyan
-            bright7=e6e6e6   # bright white
-          '';
-
-          tokyoNight = ''
-            background=1a1b26
-            foreground=c0caf5
-            regular0=15161E
-            regular1=f7768e
-            regular2=9ece6a
-            regular3=e0af68
-            regular4=7aa2f7
-            regular5=bb9af7
-            regular6=7dcfff
-            regular7=a9b1d6
-            bright0=414868
-            bright1=f7768e
-            bright2=9ece6a
-            bright3=e0af68
-            bright4=7aa2f7
-            bright5=bb9af7
-            bright6=7dcfff
-            bright7=c0caf5
-          '';
-        in {
-          text = ''
-            pad=2x2 center
-            font=Berkeley Mono,Noto Color Emoji:style=Regular
-
-            [cursor]
-            color=282a36 f8f8f2
-
-            [colors]
-            ${optionalString (cfg.foot.theme == "tokyo-night") tokyoNight}
-            ${optionalString (cfg.foot.theme == "dracula") dracula}
-          '';
-        };
-      };
 
       systemd.user.targets.wayland-session = {
         Unit = {
@@ -300,152 +176,180 @@ in {
       };
     })
     (mkIf (cfg.statusbar.enable) {
-      programs.waybar = let
-        primaryDisplay = if isLaptop then "eDP-1" else "DP-1";
-
-        dwlModule = dispName: {
-          exec = "${dwlTags}/bin/dwl-waybar '${dispName}'";
-          format = "{}";
-          escape = true;
-          max-length = 70;
-          return-type = "json";
-        };
-      in {
+      programs.waybar = {
         enable = true;
         package = cfg.statusbar.pkg;
-        settings = [
-          {
-            layer = "bottom";
-            output = [ primaryDisplay ];
+        settings = {
+          mainbar = {
+            layer = "top";
+            # output = [ primaryDisplay ];
 
-            modules-left = [ "custom/dwl" ];
-            modules-center = [ "clock" ];
+            modules-left = [ "wlr/workspaces" ];
+            modules-center = [ "custom/media" ];
             modules-right = [
               "cpu"
+              "custom/separator"
               "memory"
+              "custom/separator"
               "temperature"
+              "custom/separator"
               "battery"
+              "custom/separator"
               "backlight"
-              "custom/media"
+              "custom/separator"
               "pulseaudio"
+              "custom/separator"
               "network"
+              "custom/separator"
+              "custom/input_method"
+              "custom/separator"
+              "clock"
+              "custom/separator"
               "idle_inhibitor"
+              "custom/separator"
               "tray"
             ];
 
             gtk-layer-shell = true;
-            modules = {
-              clock = {
-                format = "{:%I:%M %p}";
-                tooltip = true;
-                tooltip-format = ''
-                  <big>{:%Y %B}</big>
-                  <tt><small>{calendar}</small></tt>'';
+            clock = {
+              format = "{:%a %d %b %H:%M}";
+              tooltip-format = ''
+                <big>{:%Y %B}</big>
+                <tt><small>{calendar}</small></tt>'';
+            };
+
+            cpu = {
+              interval = 10;
+              format = "&#8239;{usage}%";
+              tooltip = false;
+            };
+            memory = {
+              interval = 30;
+              format = " {used:0.1f}G/{total:0.1f}G";
+              tooltip = false;
+            };
+            temperature = {
+              hwmon-path = "/sys/class/hwmon/hwmon4/temp1_input";
+              critical-threshold = 85;
+              format = "{icon}&#8239;{temperatureC}°C";
+              format-icons = [ "" "" "" "" "" ];
+            };
+            battery = {
+              bat = "BAT0";
+              states = {
+                good = 80;
+                warning = 30;
+                critical = 15;
               };
-              cpu = {
-                interval = 10;
-                format = "{usage}% ";
-                tooltip = true;
+              format = "{icon}&#8239;{capacity}%";
+              format-charging = "󰂄&#8239;{capacity}%";
+              format-plugged = "&#8239;{capacity}%";
+              format-alt = "{icon} {time}";
+              format-icons = [ "" "" "" "" "" ];
+              tooltip = false;
+              tooltip-format = "{timeTo}";
+            };
+            backlight = {
+              device = "acpi_video1";
+              format = "{icon}&#8239;{percent}%";
+              format-icons = [ "" "" ];
+              #format-icons = [ "" "" ];
+              on-scroll-up = "${pkgs.light}/bin/light -A 2";
+              on-scroll-down = "${pkgs.light}/bin/light -U 1";
+            };
+            pulseaudio = {
+              format = "{icon}&#8239;{volume}% {format_source}";
+              format-bluetooth = "{volume}% {icon} {format_source}";
+              format-bluetooth-muted = "{volume}% 󰗿 {format_source}";
+              format-muted = " {volume}% {format_source}";
+              format-source-muted = "";
+              format-icons = {
+                "default" = [ "" "" "" ];
+                headphone = "";
+                hands-free = "";
+                headset = "";
+                phone = "";
+                portable = "";
+                car = "";
               };
-              memory = {
-                interval = 30;
-                format = "{used:0.1f}G/{total:0.1f}G ";
-                tooltip = true;
-              };
-              temperature = { };
-              battery = {
-                bat = "BAT1";
-                states = {
-                  good = 80;
-                  warning = 30;
-                  critical = 15;
-                };
-                format = "{capacity}% {icon}";
-                format-charging = "{capacity}% ";
-                format-plugged = "{capacity}% ";
-                format-alt = "{time} {icon}";
-                format-icons = [ "" "" "" "" "" ];
-                tooltip = true;
-                tooltip-format = "{timeTo}";
-              };
-              backlight = {
-                device = "acpi_video1";
-                format = "{percent}% {icon}";
-                format-icons = [ "" "" ];
-                on-scroll-up = "${pkgs.light}/bin/light -A 2";
-                on-scroll-down = "${pkgs.light}/bin/light -U 1";
-              };
-              pulseaudio = {
-                format = "{volume}% {icon} {format_source}";
-                format-bluetooth = "{volume}% {icon} {format_source}";
-                format-bluetooth-muted = "{volume}%  {format_source}";
-                format-muted = "{volume}%  {format_source}";
-                format-source = "{volume}% ";
-                format-source-muted = "{volume}% ";
-                format-icons = { "default" = [ "" "" "" ]; };
-                on-scroll-up = "${pkgs.scripts.soundTools}/bin/stools vol up 1";
-                on-scroll-down =
-                  "${pkgs.scripts.soundTools}/bin/stools vol down 1";
-                on-click-right =
-                  "${pkgs.scripts.soundTools}/bin/stools vol toggle";
-                on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
-                tooltip = true;
-              };
-              network = {
-                interval = 60;
-                interface = "wlp*";
-                format-wifi = "{essid} ({signalStrength}%) ";
-                format-ethernet = "{ipaddr}/{cidr} ";
-                tooltip-format = "{ifname} via {gwaddr} ";
-                format-linked = "{ifname} (No IP) ";
-                format-disconnected = "Disconnected ⚠";
-                format-alt = "{ifname}: {ipaddr}/{cidr}";
-                tooltip = true;
-              };
-              idle_inhibitor = {
-                format = "{icon}";
-                format-icons = {
-                  activated = "";
-                  deactivated = "";
-                };
-              };
-              tray = { spacing = 10; };
-              "custom/dwl" = dwlModule primaryDisplay;
-              "custom/media" = {
-                format = "{icon}{}";
-                return-type = "json";
-                format-icons = {
-                  Playing = " ";
-                  Paused = " ";
-                };
-                max-length = 30;
-                exec = ''
-                  ${pkgs.playerctl}/bin/playerctl -a metadata --format '{"text": "{{playerName}}: {{artist}} - {{markup_escape(title)}}", "tooltip": "{{playerName}} : {{markup_escape(title)}}", "alt": "{{status}}", "class": "{{status}}"}' -F'';
-                on-click = "${pkgs.playerctl}/bin/playerctl play-pause";
-                smooth-scrolling-threshold = if isLaptop then 10 else 5;
-                on-scroll-up = "${pkgs.playerctl}/bin/playerctl next";
-                on-scroll-down = "${pkgs.playerctl}/bin/playerctl previous";
+              on-scroll-up = "${pkgs.pamixer}/bin/pamixer -i 5";
+              on-scroll-down = "${pkgs.pamixer}/bin/pamixer -d 5";
+              on-click-middle = "${pkgs.pamixer}/bin/pamixer --toggle-mute";
+              on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
+              tooltip = true;
+            };
+            network = {
+              interval = 60;
+              format-wifi = " {essid} ({signalStrength}%)";
+              format-ethernet = " {ipaddr}/{cidr}";
+              tooltip-format = " {ifname} via {gwaddr}";
+              format-linked = " {ifname} (No IP)";
+              format-disconnected = "⚠ Disconnected";
+              format-alt = "{ifname}: {ipaddr}/{cidr}";
+              tooltip = true;
+            };
+            idle_inhibitor = {
+              format = "{icon}";
+              format-icons = {
+                activated = "";
+                deactivated = "";
               };
             };
-          }
-          (mkIf (cfg.type == "dwl" && !isLaptop) {
-            modules-left = [ "custom/dwl" ];
-            output = "HDMI-A-1";
-            modules = { "custom/dwl" = dwlModule "HDMI-A-1"; };
-          })
-        ];
-        style = ''
-          * {
-            font-size: 24px;
-          }
+            tray = { spacing = 10; };
 
-          window#waybar {
-            background: @theme_base_color;
-            border-bottom: 1px solid @unfocused_borders;
-            color: @theme_text_color;
-          }
-        '';
-        # Use custom systemd
+            "custom/input_method" = {
+              exec =
+                "if [ $(ibus engine) == 'xkb:us::eng' ]; then echo 'EN'; else echo 'VI' ; fi";
+              on-click =
+                "if [ $(ibus engine) == 'xkb:us::eng' ]; then ibus engine Bamboo; else ibus engine 'xkb:us::eng' ; fi";
+              interval = 30;
+            };
+
+            "custom/separator" = {
+              format = "|";
+              interval = "once";
+              tooltip = false;
+            };
+
+            "wlr/workspaces" = {
+              sort-by-name = true;
+              format = "{icon}";
+              format-icons = {
+                "1" = "";
+                "2" = "";
+                "3" = "";
+                "4" = "";
+                "5" = "";
+                "6" = "󰀫";
+                "7" = "";
+                "8" = "󰏉";
+                "9" = "󰒠";
+                special = "󱄅";
+                urgent = "";
+                focused = "";
+                default = "";
+              };
+            };
+
+            "custom/media" = {
+              format = "{icon}{}";
+              return-type = "json";
+              format-icons = {
+                Playing = " ";
+                Paused = " ";
+              };
+              max-length = 30;
+              exec = ''
+                ${pkgs.playerctl}/bin/playerctl -a metadata --format '{"text": "{{playerName}}: {{artist}} - {{markup_escape(title)}}", "tooltip": "{{playerName}} : {{markup_escape(title)}}", "alt": "{{status}}", "class": "{{status}}"}' -F'';
+              on-click = "${pkgs.playerctl}/bin/playerctl play-pause";
+              smooth-scrolling-threshold = if isLaptop then 10 else 5;
+              on-scroll-up = "${pkgs.playerctl}/bin/playerctl next";
+              on-scroll-down = "${pkgs.playerctl}/bin/playerctl previous";
+            };
+            #};
+          };
+        };
+        style = readFile ./waybar-style.css;
         systemd.enable = false;
       };
 
@@ -454,8 +358,8 @@ in {
           Description =
             "Highly customizable Wayland bar for Sway and Wlroots based compositors.";
           Documentation = "https://github.com/Alexays/Waybar/wiki";
-          BindsTo = [ "wayland-session.target" ];
-          After = [ "wayland-session.target" ];
+          BindsTo = [ "hyprland-session.target" ];
+          After = [ "hyprland-session.target" ];
           Wants = [ "tray.target" ];
           Before = [ "tray.target" ];
         };
@@ -467,7 +371,7 @@ in {
           KillMode = "mixed";
         };
 
-        Install = { WantedBy = [ "wayland-session.target" ]; };
+        Install = { WantedBy = [ "hyprland-session.target" ]; };
       };
     })
   ]);

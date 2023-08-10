@@ -23,7 +23,13 @@ in {
         message = "To enable wayland for user, it must be enabled for system";
       }];
 
-      home.packages = [ switch-input-method pamixer ];
+      home.packages = with pkgs; [
+        switch-input-method
+        pamixer
+        dunst
+        qt5.qtwayland
+        qt6.qtwayland
+      ];
       programs = {
         wofi = {
           enable = true;
@@ -53,6 +59,8 @@ in {
         systemdIntegration = true;
 
         settings = {
+          exec-once = [ "ibus-daemon -d" "${pkgs.dunst}/bin/dunst" ];
+
           monitor = [
             "eDP-1,1920x1080@60,960x2160,1"
             "DP-2,3840x2160@30,0x0,1,bitdepth,10"
@@ -115,7 +123,6 @@ in {
             new_on_top = true;
             no_gaps_when_only = 1;
             orientation = "right";
-            always_center_master = true;
           };
 
           gestures = { workspace_swipe = true; };
@@ -126,7 +133,7 @@ in {
             "$mod SHIFT, RETURN, exec, alacritty"
             "$mod SHIFT, C, killactive,"
             "$mod SHIFT, Q, exit,"
-            "$mod RETURN, layoutmsg, swapwithmaster"
+            "$mod, RETURN, layoutmsg, swapwithmaster"
             "$mod, J, layoutmsg, cyclenext"
             "$mod, K, layoutmsg, cycleprev"
             "$mod SHIFT,J,layoutmsg,swapnext"
@@ -137,12 +144,12 @@ in {
             "$mod, P, exec, wofi --show drun"
             "$mod, I, pseudo," # dwindle
             "$mod, U, togglesplit," # dwindle
-            "$mod, F, fullscreen,0"
-            "$mod SHIFT, F, fullscreen,1"
+            "$mod, F, fullscreen,1"
+            "$mod SHIFT, F, fullscreen,0"
             # media keys
-            "121,exec, pamixer --mute"
-            "122,exec, pamixer -d 5"
-            "123,exec, pamixer -i 5"
+            ",121,exec, pamixer --toggle-mute"
+            ",122,exec, pamixer -d 5"
+            ",123,exec, pamixer -i 5"
 
             "$mod,slash,exec,switch-input-method"
 
@@ -154,11 +161,6 @@ in {
             "$mod, right, movefocus, r"
             "$mod, up, movefocus, u"
             "$mod, down, movefocus, d"
-
-            "$mod, H, movefocus, l"
-            "$mod, L, movefocus, r"
-            "$mod, K, movefocus, u"
-            "$mod, J, movefocus, d"
 
             # Switch workspaces with mod + [0-9]
             "$mod, 1, workspace, 1"

@@ -100,6 +100,11 @@ in {
         fstrim.enable = true;
         fwupd.enable = true;
         udev.packages = with pkgs; [ gnome.gnome-settings-daemon ];
+        xserver = {
+          layout = "us";
+          xkbModel = "thinkpad";
+          xkbOptions = "caps:escape,altwin:prtsc_rwin";
+        };
       };
       console.useXkbConfig = true;
 

@@ -343,7 +343,7 @@
         connectivity = {
           bluetooth.enable = true;
           sound.enable = true;
-          printing.enable = false;
+          printing.enable = true;
         };
         networking = {
           firewall = {
@@ -489,7 +489,7 @@
                   enable = true;
                   mode = "fit";
                 };
-                statusbar = { enable = false; };
+                statusbar = { enable = true; };
                 screenlock.enable = false;
               };
               xorg = {
