@@ -63,6 +63,7 @@ in {
             "ibus-daemon -d"
             "${pkgs.dunst}/bin/dunst"
             "${pkgs.wpaperd}/bin/wpaperd"
+            "setxkbmap -option altwin:prtsc_rwin -option caps:escape"
           ];
 
           monitor = [
