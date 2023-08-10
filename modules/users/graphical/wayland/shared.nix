@@ -31,23 +31,13 @@ in {
     background = {
       enable = mkOption {
         type = types.bool;
-        description = "Enable background [swaybg]";
+        description = "Enable background [wpaperd]";
       };
 
-      pkg = mkOption {
-        type = types.package;
-        default = pkgs.swaybg;
-        description = "Package to use for swaybg";
-      };
-
-      image = mkOption {
-        type = types.path;
+      path = mkOption {
+        type = types.str;
+        default = "~/Pictures/Wallpapers";
         description = "Path to image file used for background";
-      };
-
-      mode = mkOption {
-        type = types.enum [ "stretch" "fill" "fit" "center" "tile" ];
-        description = "Scaling mode for background";
       };
     };
 
@@ -156,23 +146,26 @@ in {
         ++ (optional (cfg.screenlock.type == "swaylock") swaylock);
     }))
     (mkIf cfg.background.enable {
-      home.packages = [ pkgs.swaybg ];
+      home.packages = [ pkgs.wpaperd ];
 
-      systemd.user.services.swaybg = mkIf cfg.background.enable {
+      xdg.configFile."wpaperd/wallpaper.toml".text = ''
+        [default]
+        path = "${cfg.background.path}"
+        duration = "30m"
+        sorting = "ascending"
+      '';
+      systemd.user.services.wpaperd = mkIf cfg.background.enable {
         Unit = {
-          Description = "swaybg background service";
-          Documentation = [ "man:swabyg(1)" ];
-          Requires = [ "wayland-session.target" ];
-          After = [ "wayland-session.target" ];
+          Description = "wpaperd background service";
+          Documentation = [ "man:wpaperd(1)" ];
+          Requires = [ "hyprland-session.target" ];
+          After = [ "hyprland-session.target" ];
           Before = mkIf (cfg.statusbar.enable) [ "waybar.service" ];
         };
 
-        Service = {
-          ExecStart =
-            "${cfg.background.pkg}/bin/swaybg --image ${cfg.background.image} --mode ${cfg.background.mode}";
-        };
+        Service = { ExecStart = "${pkgs.wpaperd}/bin/wpaperd"; };
 
-        Install = { WantedBy = [ "wayland-session.target" ]; };
+        Install = { WantedBy = [ "hyprland-session.target" ]; };
       };
     })
     (mkIf (cfg.statusbar.enable) {

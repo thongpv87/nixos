@@ -485,10 +485,7 @@
               wayland = {
                 enable = true;
                 type = "hyprland";
-                background = {
-                  enable = true;
-                  mode = "fit";
-                };
+                background = { enable = true; };
                 statusbar = { enable = true; };
                 screenlock.enable = false;
               };

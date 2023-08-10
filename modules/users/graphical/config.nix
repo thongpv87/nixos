@@ -9,9 +9,7 @@ with lib; {
 
       background = {
         enable = mkDefault true;
-        image = mkDefault ./wallpapers/peacefulmtn.jpg;
-        mode = mkDefault "fill";
-        pkg = mkDefault pkgs.swaybg;
+        path = "/home/thongpv87/Pictures/Wallpapers";
       };
 
       statusbar = { enable = mkDefault false; };
