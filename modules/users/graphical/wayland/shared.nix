@@ -365,7 +365,7 @@ in {
         };
 
         Service = {
-          ExecStart = "${pkgs.waybar}/bin/waybar";
+          ExecStart = "${pkgs.waybar-hyprland}/bin/waybar";
           ExecReload = "${pkgs.coreutils}/bin/kill -SIGUSR2 $MAINPID";
           Restart = "on-failure";
           KillMode = "mixed";
