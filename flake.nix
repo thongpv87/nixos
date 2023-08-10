@@ -487,7 +487,10 @@
                 type = "hyprland";
                 background = { enable = true; };
                 statusbar = { enable = true; };
-                screenlock.enable = false;
+                screenlock = {
+                  enable = true;
+                  type = "swaylock";
+                };
               };
               xorg = {
                 enable = false;

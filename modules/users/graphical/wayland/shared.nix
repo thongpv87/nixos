@@ -137,7 +137,7 @@ in {
           event = "before-sleep";
           command = lockCommand;
         }];
-        systemdTarget = "wayland-session.target";
+        systemdTarget = "hyprland-session.target";
         extraArgs = [ "idlehint 600" ];
       };
 
