@@ -359,6 +359,7 @@
           wayland = {
             enable = true;
             waylockPam = true;
+            swaylockPam = true;
           };
         };
 

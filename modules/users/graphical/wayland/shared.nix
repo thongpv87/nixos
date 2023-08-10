@@ -99,21 +99,20 @@ in {
       isWaylock = cfg.screenlock.type == "waylock";
       isSwaylock = cfg.screenlock.type == "swaylock";
     in {
-      assertions = [
-        {
-          assertion = isWaylock
-            -> (systemCfg.graphical.wayland.waylockPam && isWaylock);
-          message =
-            "Waylock PAM must be enabled by the system to use waylock screen locking.";
-        }
+      assertions = [{
+        assertion = isWaylock
+          -> (systemCfg.graphical.wayland.waylockPam && isWaylock);
+        message =
+          "Waylock PAM must be enabled by the system to use waylock screen locking.";
+      }
 
-        {
-          assertion = isSwaylock
-            -> (systemCfg.graphical.wayland.swaylockPam && isSwaylock);
-          message =
-            "Swaylock PAM must be enabled by the system to use waylock screen locking.";
-        }
-      ];
+      # {
+      #   assertion = isSwaylock
+      #     -> (systemCfg.graphical.wayland.swaylockPam && isSwaylock);
+      #   message =
+      #     "Swaylock PAM must be enabled by the system to use waylock screen locking.";
+      # }
+        ];
 
       services.swayidle = let
         lockCommand = if cfg.screenlock.type == "waylock" then
@@ -194,8 +193,6 @@ in {
               "custom/separator"
               "network"
               "custom/separator"
-              "custom/input_method"
-              "custom/separator"
               "clock"
               "custom/separator"
               "idle_inhibitor"
@@ -252,15 +249,15 @@ in {
             };
             pulseaudio = {
               format = "{icon}&#8239;{volume}% {format_source}";
-              format-bluetooth = "{volume}% {icon} {format_source}";
-              format-bluetooth-muted = "{volume}% 󰗿 {format_source}";
+              format-bluetooth = "{volume}% {icon}  {format_source}";
+              format-bluetooth-muted = "{volume}% 󰟎 {format_source}";
               format-muted = " {volume}% {format_source}";
               format-source-muted = "";
               format-icons = {
                 "default" = [ "" "" "" ];
-                headphone = "";
-                hands-free = "";
-                headset = "";
+                headphone = "󰋋";
+                hands-free = "";
+                headset = "󰋎";
                 phone = "";
                 portable = "";
                 car = "";
@@ -289,14 +286,6 @@ in {
               };
             };
             tray = { spacing = 10; };
-
-            "custom/input_method" = {
-              exec =
-                "if [ $(ibus engine) == 'xkb:us::eng' ]; then echo 'EN'; else echo 'VI' ; fi";
-              on-click =
-                "if [ $(ibus engine) == 'xkb:us::eng' ]; then ibus engine Bamboo; else ibus engine 'xkb:us::eng' ; fi";
-              interval = 30;
-            };
 
             "custom/separator" = {
               format = "|";
