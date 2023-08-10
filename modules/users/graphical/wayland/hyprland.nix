@@ -59,7 +59,11 @@ in {
         systemdIntegration = true;
 
         settings = {
-          exec-once = [ "ibus-daemon -d" "${pkgs.dunst}/bin/dunst" ];
+          exec-once = [
+            "ibus-daemon -d"
+            "${pkgs.dunst}/bin/dunst"
+            "${pkgs.wpaperd}/bin/wpaperd"
+          ];
 
           monitor = [
             "eDP-1,1920x1080@60,960x2160,1"
