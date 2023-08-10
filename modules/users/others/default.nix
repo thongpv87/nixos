@@ -16,7 +16,6 @@ in {
 
   config = mkIf cfg.enable {
     thongpv87.others = {
-      #hyprland.enable = mkDefault false;
       xmonad = {
         enable = mkDefault false;
         theme = "simple";
