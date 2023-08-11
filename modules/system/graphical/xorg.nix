@@ -13,12 +13,8 @@ in {
   config = mkIf (config.thongpv87.graphical.enable && cfg.enable) {
     services.xserver = {
       enable = true;
-      libinput = {
-        enable = true;
-        # touchpad = { naturalScrolling = true; };
-      };
-
-      displayManager.startx.enable = true;
+      libinput = { enable = true; };
+      displayManager.gdm.enable = true;
     };
   };
 }

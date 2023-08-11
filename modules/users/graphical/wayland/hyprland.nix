@@ -62,7 +62,7 @@ in {
           exec-once = [
             "ibus-daemon -d"
             "${pkgs.dunst}/bin/dunst"
-            "${pkgs.wpaperd}/bin/wpaperd"
+            #"${pkgs.wpaperd}/bin/wpaperd"
             "setxkbmap -option altwin:prtsc_rwin -option caps:escape"
           ];
 

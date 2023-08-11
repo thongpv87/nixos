@@ -17,7 +17,7 @@ let
       ${pkgs.glib.dev}/bin/glib-compile-schemas $out/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas/
     '';
 in {
-  imports = [ ./applications ./wayland ./xorg.nix ./config.nix ./mime.nix ];
+  imports = [ ./applications ./wayland ./xorg ./config.nix ./mime.nix ];
 
   options.thongpv87.graphical = {
     enable = mkOption {
@@ -34,7 +34,7 @@ in {
   config = mkIf cfg.enable {
     home = {
       sessionVariables = {
-        QT_QPA_PLATFORMTHEME = mkForce "breeze-qt5";
+        QT_QPA_PLATFORMTHEME = mkForce "pop";
         SSH_AUTH_SOCK = "\${XDG_RUNTIME_DIR}/keyring/ssh";
         SSH_ASKPASS = "${pkgs.gnome.seahorse}/libexec/seahorse/ssh-askpass";
         NIX_GSETTINGS_OVERRIDES_DIR =
@@ -77,55 +77,28 @@ in {
       ];
     };
 
-    home.pointerCursor = {
-      # installed in profile earlier
-      package = pkgs.volantes-cursors;
-      name = "volantes_cursors";
-      # Pass through config to gtk
-      # https://github.com/nix-community/home-manager/blob/693d76eeb84124cc3110793ff127aeab3832f95c/modules/config/home-cursor.nix#L152
-      gtk.enable = true;
-    };
-
     fonts.fontconfig.enable = true;
+    gtk = {
+      enable = true;
+      iconTheme = {
+        package = pkgs.pop-gtk-theme;
+        name = "pop";
+      };
+
+      font = {
+        # already installed in profile
+        package = null;
+        name = "Berkeley Mono Variable";
+        size = 10;
+      };
+    };
 
     qt = {
       enable = true;
       platformTheme = "gnome";
-      style = mkMerge [
-        (mkIf (cfg.theme == "breeze") {
-          package = with pkgs; breeze-gtk;
-          name = "Breeze";
-        })
-        (mkIf (cfg.theme == "pop") {
-          package = with pkgs; pop-gtk-theme;
-          name = "pop";
-        })
-      ];
-    };
-
-    gtk = {
-      enable = true;
-      theme = mkMerge [
-        (mkIf (cfg.theme == "breeze") {
-          package = with pkgs; breeze-gtk;
-          name = "Breeze";
-        })
-        (mkIf (cfg.theme == "pop") {
-          package = with pkgs; pop-gtk-theme;
-          name = "pop";
-        })
-      ];
-
-      iconTheme = {
-        package = null;
-        name = "la-capitaine-icon-theme";
-      };
-
-      font = {
-        # already installed in profila
-        package = null;
-        name = "Berkeley Mono Variable";
-        size = 10;
+      style = {
+        package = pkgs.pop-gtk-theme;
+        name = "pop";
       };
     };
 
@@ -140,7 +113,7 @@ in {
 
     systemd.user.sessionVariables = {
       # So graphical services are themed (eg trays)
-      QT_QPA_PLATFORMTHEME = "breeze-qt5";
+      QT_QPA_PLATFORMTHEME = "pop";
       PATH = builtins.concatStringsSep ":" [
         # Following two needed for themes from trays
         # "${pkgs.libsForQt5.qtstyleplugin-kvantum}/bin"

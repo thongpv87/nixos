@@ -22,25 +22,37 @@ in {
     };
   };
 
-  config = {
-    environment.systemPackages = with pkgs;
-      optional cfg.bluetooth.enable scripts.bluetoothTools
-      ++ optionals cfg.sound.enable [ pulseaudio scripts.soundTools ];
+  config = mkMerge [
+    {
+      environment.systemPackages = with pkgs;
+        optional cfg.bluetooth.enable scripts.bluetoothTools
+        ++ optionals cfg.sound.enable [ pulseaudio scripts.soundTools ];
 
-    security.rtkit.enable = cfg.sound.enable;
-    services.pipewire = mkIf (cfg.sound.enable) {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-      jack.enable = true;
-    };
+      security.rtkit.enable = cfg.sound.enable;
+      services.pipewire = mkIf (cfg.sound.enable) {
+        enable = true;
+        alsa.enable = true;
+        alsa.support32Bit = true;
+        pulse.enable = true;
+        jack.enable = true;
+      };
+    }
 
-    #hardware.pulseaudio.enable = cfg.sound.enable;
+    mkIf
+    cfg.printing.enable
+    {
+      services.printing.enable = true;
+      services.avahi.enable = true;
+      services.avahi.nssmdns = true;
+      # for a WiFi printer
+      services.avahi.openFirewall = true;
+    }
 
-    services.printing.enable = cfg.printing.enable;
-
-    hardware.bluetooth.enable = cfg.bluetooth.enable;
-    services.blueman.enable = cfg.bluetooth.enable;
-  };
+    mkIf
+    cfg.bluetooth.enable
+    {
+      hardware.bluetooth.enable = true;
+      services.blueman.enable = true;
+    }
+  ];
 }

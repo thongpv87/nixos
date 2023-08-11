@@ -49,6 +49,11 @@
       inputs.flake-utils.follows = "flake-utils";
     };
 
+    hyprland = {
+      url = "github:hyprwm/Hyprland/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Programs
     neovim-flake.url = "github:jordanisaacs/neovim-flake";
 
@@ -64,7 +69,7 @@
   outputs = { self, nixpkgs, nixpkgs-stable, jdpkgs, impermanence, deploy-rs
     , agenix, microvm-nix, nixpkgs-wayland, secrets, home-manager, nur
     , neovim-flake, simple-nixos-mailserver, st-flake, dwm-flake, dwl-flake
-    , homeage, ... }@inputs:
+    , homeage, hyprland, ... }@inputs:
     let
       inherit (nixpkgs) lib;
 
@@ -112,8 +117,10 @@
       pkgs = import patchedPkgs {
         inherit system overlays;
         config = {
-          permittedInsecurePackages =
-            [ "electron-9.4.4" "qtwebkit-5.212.0-alpha4" ];
+          permittedInsecurePackages = [
+            "electron-9.4.4"
+            #"qtwebkit-5.212.0-alpha4"
+          ];
           allowUnfree = true;
         };
       };
@@ -414,7 +421,6 @@
           };
 
           dropbox.enable = false;
-          graphical.desktop-env.kde.enable = true;
         }
       ];
 
@@ -441,6 +447,11 @@
               };
             };
           };
+
+          graphical.desktop-env = {
+            kde.enable = false;
+            xmonad.enable = true;
+          };
         }
       ];
 
@@ -448,7 +459,7 @@
         thinkpad-config-zfs
         {
           system.hardware.thinkpad-x1e2 = { xorg.enable = false; };
-          graphical.desktop-env.kde.enable = false;
+          graphical.desktop-env = { kde.enable = false; };
         }
       ];
 
@@ -484,18 +495,22 @@
                 kdeconnect.enable = false;
               };
               wayland = {
-                enable = true;
+                enable = false;
                 type = "hyprland";
-                background = { enable = true; };
+                background = { enable = false; };
                 statusbar = { enable = true; };
                 screenlock = {
-                  enable = true;
+                  enable = false;
                   type = "swaylock";
                 };
               };
               xorg = {
-                enable = false;
-                type = "xmonad";
+                enable = true;
+                xmonad = {
+                  enable = true;
+                  theme = "simple";
+                };
+
                 screenlock.enable = false;
               };
             };

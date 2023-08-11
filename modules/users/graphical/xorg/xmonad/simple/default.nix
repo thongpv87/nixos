@@ -2,7 +2,7 @@
 
 with lib;
 let
-  cfg = config.thongpv87.others.xmonad.simple;
+  cfg = config.thongpv87.graphical.xorg.xmonad.simple;
 
   shellScripts = pkgs.stdenv.mkDerivation {
     name = "myShellScripts";
@@ -17,7 +17,7 @@ let
   statusbar = pkgs.haskellPackages.callCabal2nix "xmobar" ./xmobar { };
 in {
   options = {
-    thongpv87.others.xmonad.simple = {
+    thongpv87.graphical.xorg.xmonad.simple = {
       enable = mkOption { default = false; };
     };
   };
@@ -49,29 +49,25 @@ in {
       gnome.gnome-terminal
       shellScripts
       trayer
-      #statusbar
+      statusbar
       networkmanagerapplet
       imagemagick
       #jonaburg-picom
     ];
 
-    thongpv87.others.media.enable = false;
-
     xsession = {
       enable = true;
-
-      profileExtra = "#wal -R& ";
 
       windowManager = {
         xmonad = {
           enable = true;
           enableContribAndExtras = true;
-          config = ./xmonad/xmonad.hs;
-          extraPackages = hsPkgs: [ hsPkgs.xmobar ];
-          libFiles = lib.foldr lib.trivial.mergeAttrs { } (lib.lists.forEach
-            (lib.lists.filter (x: builtins.baseNameOf x != "xmonad.hs")
-              (lib.filesystem.listFilesRecursive ./xmonad))
-            (file: { "${builtins.baseNameOf file}" = file; }));
+          # config = ./xmonad/xmonad.hs;
+          # extraPackages = hsPkgs: [ hsPkgs.xmobar ];
+          # libFiles = lib.foldr lib.trivial.mergeAttrs { } (lib.lists.forEach
+          #   (lib.lists.filter (x: builtins.baseNameOf x != "xmonad.hs")
+          #     (lib.filesystem.listFilesRecursive ./xmonad))
+          #   (file: { "${builtins.baseNameOf file}" = file; }));
         };
       };
     };
@@ -124,7 +120,7 @@ in {
         enable = true;
         enableXinerama = true;
         display = "fill";
-        imageDirectory = "%h/.wallpapers";
+        imageDirectory = "%h/Pictures/Wallpapers";
         interval = "24h";
       };
 
@@ -135,7 +131,7 @@ in {
 
         #activeOpacity = "1";
         #inactiveOpacity = "0.9";
-        opacityRule = [
+        opacityRules = [
           "100:class_g   *?= 'Chromium-browser'"
           "100:class_g   *?= 'Google-Chrome'"
           "100:class_g   *?= 'zoom'"
@@ -151,29 +147,28 @@ in {
           "70:name       *?= 'GLavaRadial'"
         ];
 
-        extraOptions = ''
+        settings = {
           corner-radius = 12;
           xinerama-shadow-crop = true;
           #blur-background = true;
           #blur-method = "kernel";
           #blur-strength = 5;
-          rounded-corners-exclude = [
-            #"window_type = 'normal'",
-            "class_g = 'Rofi'",
-            #"class_g = 'Tint2'",
-            "name = 'Notification area'",
-            "name = 'xmobar'",
-            "class_g = 'xmobar'",
-            #"class_g = 'kitty'",
-            #"class_g = 'Alacritty'",
-            "class_g = 'Polybar'",
-            "class_g = 'code-oss'",
-            "class_g = 'trayer'",
-            #"class_g = 'firefox'",
-            "class_g = 'Thunderbird'"
-          ];
-        '';
-        experimentalBackends = true;
+          rounded-corners-exclude = {
+            #window_type = "normal";
+            class_g = [
+              "Rofi"
+              "Polybar"
+              "code-oss"
+              "trayer"
+              "Thunderbird"
+              #"xmobar"
+              #"Alacritty"
+              #"firefox"
+            ];
+
+            name = [ "Notification area" "xmobar" ];
+          };
+        };
 
         shadowExclude = [ "bounding_shaped && !rounded_corners" ];
 

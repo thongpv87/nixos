@@ -10,7 +10,7 @@ in {
   config = mkIf (cfg.graphical.enable == true) {
     home = {
       sessionVariables = {
-        QT_QPA_PLATFORMTHEME = "breeze-qt5";
+        QT_QPA_PLATFORMTHEME = "pop";
         SSH_AUTH_SOCK = "\${XDG_RUNTIME_DIR}/keyring/ssh";
         SSH_ASKPASS = "${pkgs.gnome.seahorse}/libexec/seahorse/ssh-askpass";
       };
@@ -49,22 +49,13 @@ in {
       ];
     };
 
-    home.pointerCursor = {
-      # installed in profile earlier
-      package = pkgs.volantes-cursors;
-      name = "volantes_cursors";
-      # Pass through config to gtk
-      # https://github.com/nix-community/home-manager/blob/693d76eeb84124cc3110793ff127aeab3832f95c/modules/config/home-cursor.nix#L152
-      gtk.enable = true;
-    };
-
     fonts.fontconfig.enable = true;
 
     gtk = {
       enable = true;
       iconTheme = {
-        package = null;
-        name = "la-capitaine-icon-theme";
+        package = pkgs.pop-gtk-theme;
+        name = "pop";
       };
 
       font = {
@@ -72,6 +63,15 @@ in {
         package = null;
         name = "Berkeley Mono Variable";
         size = 10;
+      };
+    };
+
+    qt = {
+      enable = true;
+      platformTheme = "gnome";
+      style = {
+        package = pkgs.pop-gtk-theme;
+        name = "pop";
       };
     };
 
@@ -86,7 +86,7 @@ in {
 
     systemd.user.sessionVariables = {
       # So graphical services are themed (eg trays)
-      QT_QPA_PLATFORMTHEME = "breeze-qt5";
+      QT_QPA_PLATFORMTHEME = "pop";
       PATH = builtins.concatStringsSep ":" [
         # Following two needed for themes from trays
         # "${pkgs.libsForQt5.qtstyleplugin-kvantum}/bin"

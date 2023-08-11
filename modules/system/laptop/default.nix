@@ -25,6 +25,8 @@ in {
       wirelesstools
       pciutils
       usbutils
+      libimobiledevice
+      ifuse
     ];
 
     programs = { light.enable = true; };
@@ -46,6 +48,8 @@ in {
       # better timesync for unstable internet connections
       chrony.enable = true;
       timesyncd.enable = false;
+      # iOS mounting
+      usbmuxd.enable = true;
 
       # Hibernate on low battery. from: https://wiki.archlinux.org/title/laptop#Hibernate_on_low_battery_level
       udev.extraRules = ''

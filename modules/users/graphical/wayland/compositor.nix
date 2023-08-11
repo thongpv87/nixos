@@ -198,16 +198,5 @@ in {
         };
       };
     })
-    (mkIf isDwl {
-      home.packages = [ dwlJD ];
-      systemd.user.targets.dwl-session = {
-        Unit = {
-          Description = "dwl compositor session";
-          Documentation = [ "man:systemd.special(7)" ];
-          BindsTo = [ "wayland-session.target" ];
-          After = [ "wayland-session.target" ];
-        };
-      };
-    })
   ]);
 }
