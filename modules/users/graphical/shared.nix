@@ -76,13 +76,13 @@ in {
     };
 
     # https://github.com/nix-community/home-manager/issues/2064
-    # systemd.user.targets.tray = {
-    #   Unit = {
-    #     Description = "Home manager system tray";
-    #     Requires = [ "graphical-session-pre.target" ];
-    #     After = [ "xdg-desktop-portal-gtk.service" ];
-    #   };
-    # };
+    systemd.user.targets.tray = {
+      Unit = {
+        Description = "Home manager system tray";
+        Requires = [ "graphical-session-pre.target" ];
+        After = [ "xdg-desktop-portal-gtk.service" ];
+      };
+    };
 
     systemd.user.sessionVariables = {
       # So graphical services are themed (eg trays)

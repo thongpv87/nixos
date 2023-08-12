@@ -14,7 +14,6 @@ let
       chmod +x $out/bin/*
     '';
   };
-  statusbar = pkgs.haskellPackages.callCabal2nix "xmobar" ./xmobar { };
 in {
   options = {
     thongpv87.graphical.xorg.xmonad.simple = {
@@ -38,7 +37,6 @@ in {
       font-awesome
       selected-nerdfonts
       rofi
-      xmobar
       libqalculate
       brightnessctl
       xorg.xbacklight
@@ -49,7 +47,8 @@ in {
       gnome.gnome-terminal
       shellScripts
       trayer
-      statusbar
+      #statusbar
+      alsa-utils
       networkmanagerapplet
       imagemagick
       #jonaburg-picom
@@ -62,12 +61,6 @@ in {
         xmonad = {
           enable = true;
           enableContribAndExtras = true;
-          # config = ./xmonad/xmonad.hs;
-          # extraPackages = hsPkgs: [ hsPkgs.xmobar ];
-          # libFiles = lib.foldr lib.trivial.mergeAttrs { } (lib.lists.forEach
-          #   (lib.lists.filter (x: builtins.baseNameOf x != "xmonad.hs")
-          #     (lib.filesystem.listFilesRecursive ./xmonad))
-          #   (file: { "${builtins.baseNameOf file}" = file; }));
         };
       };
     };
@@ -94,30 +87,13 @@ in {
           recursive = true;
         };
 
-        "xmobar/bin" = {
-          source = ./xmobar/bin;
-          recursive = true;
-        };
-
         "alacritty/alacritty.yml.in".source = ./alacritty/alacritty.yml;
       };
     };
 
-    home.file = {
-      # ".xmonad/xmobar" = {
-      #   source = ./xmobar;
-      #   recursive = true;
-      # };
-
-      # ".xmonad/bin" = {
-      #   source = ./bin;
-      #   recursive = true;
-      # };
-    };
-
     services = {
       random-background = {
-        enable = true;
+        enable = false;
         enableXinerama = true;
         display = "fill";
         imageDirectory = "%h/Pictures/Wallpapers";

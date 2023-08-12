@@ -40,6 +40,7 @@ in {
         okular
         dolphin
         pavucontrol
+        xmobar
       ];
 
       programs = { autorandr = { enable = true; }; };

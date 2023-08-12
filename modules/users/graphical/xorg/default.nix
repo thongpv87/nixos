@@ -4,7 +4,7 @@ let
   cfg = config.thongpv87.graphical.xorg;
   systemCfg = config.machineData.systemConfig;
 in {
-  imports = [ ./xmonad ./kde-xmonad ];
+  imports = [ ./xmonad ./xmobar ./kde-xmonad ];
 
   options.thongpv87.graphical.xorg = {
     enable = mkOption {

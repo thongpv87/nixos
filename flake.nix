@@ -356,7 +356,7 @@
           firewall = {
             enable = true;
             allowKdeconnect = false;
-            allowDefaultSyncthing = true;
+            allowDefaultSyncthing = false;
           };
           wifi.enable = true;
         };
@@ -510,6 +510,7 @@
                   enable = true;
                   theme = "simple";
                 };
+                xmobar.enable = true;
 
                 screenlock.enable = false;
               };
@@ -517,8 +518,8 @@
             applications = {
               enable = true;
               direnv.enable = true;
-              syncthing.enable = true;
-              neomutt.enable = true;
+              syncthing.enable = false;
+              neomutt.enable = false;
               emacs.enable = true;
               # taskwarrior = {
               #   enable = false;
