@@ -38,21 +38,17 @@ in {
       };
     }
 
-    mkIf
-    cfg.printing.enable
     {
-      services.printing.enable = true;
-      services.avahi.enable = true;
-      services.avahi.nssmdns = true;
+      services.printing.enable = cfg.printing.enable;
+      services.avahi.enable = cfg.printing.enable;
+      services.avahi.nssmdns = cfg.printing.enable;
       # for a WiFi printer
-      services.avahi.openFirewall = true;
+      services.avahi.openFirewall = cfg.printing.enable;
     }
 
-    mkIf
-    cfg.bluetooth.enable
     {
-      hardware.bluetooth.enable = true;
-      services.blueman.enable = true;
+      hardware.bluetooth.enable = cfg.bluetooth.enable;
+      services.blueman.enable = cfg.bluetooth.enable;
     }
   ];
 }
