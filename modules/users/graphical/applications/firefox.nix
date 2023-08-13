@@ -37,76 +37,9 @@ in {
                 platforms = platforms.all;
               };
             })
-            (buildFirefoxXpiAddon {
-              pname = "kagi-firefox";
-              addonId = "search@kagi.com";
-              version = "0.2";
-              url =
-                "https://addons.mozilla.org/firefox/downloads/file/3942576/kagi_search_for_firefox-0.2.xpi";
-              sha256 = "04fk6j7iqsr4vsznn0a52n6630lj3jfhzpxy02y7dyij0fx4dl1z";
-
-              meta = with lib; {
-                description = ''
-                  A simple helper extension for setting Kagi as a default search engine, and automatically logging in to Kagi in private browsing windows.
-                '';
-                license = licenses.mpl20;
-                platforms = platforms.all;
-              };
-            })
-            (buildFirefoxXpiAddon {
-              pname = "languagetool-firefox";
-              version = "5.8.10";
-              addonId = "languagetool-webextension@languagetool.org";
-              url =
-                "https://addons.mozilla.org/firefox/downloads/file/4026397/languagetool-5.8.10.xpi";
-              sha256 = "sha256-3OPw5oVD5kqX9mnxVOm5pEWSKNiqJVx8whh/bEuremE=";
-
-              meta = with lib; {
-                description = ''
-                  Check your texts for spelling and grammar problems everywhere on the web
-                '';
-                platforms = platforms.all;
-              };
-            })
-            # (buildFirefoxXpiAddon {
-            #   pname = "localcdn";
-            #   version = "2.6.46";
-            #   addonId = "{b86e4813-687a-43e6-ab65-0bde4ab75758}";
-            #   url = "https://addons.mozilla.org/firefox/downloads/file/4066709/localcdn_fork_of_decentraleyes-2.6.46.xpi";
-            #   sha256 = "sha256-qOJyPDZQ+jP//xvdpU0swYB9YAP03y66GHlTGLyyAfg=";
-
-            #   meta = with lib; {
-            #     description = ''
-            #       Emulates remote frameworks (e.g. jQuery, Bootstrap, AngularJS) and delivers them as local resource.
-            #       Prevents unnecessary 3rd party requests to Google, StackPath, MaxCDN and more.
-            #       Prepared rules for uBlock Origin/uMatrix.
-            #     '';
-            #     platforms = platforms.all;
-            #   };
-            # })
-            (buildFirefoxXpiAddon {
-              pname = "enforce-browser-fonts";
-              version = "1.2";
-              addonId = "{83e08b00-32de-44e7-97bb-1bab84d1350f}";
-              url =
-                "https://addons.mozilla.org/firefox/downloads/file/3782841/enforce_browser_fonts-1.2.xpi";
-              sha256 = "sha256-h8h1hXim3d9y+Anze3ENz1dAneNXywINwcGXRieGl0U=";
-
-              meta = with lib; {
-                description = ''
-                  Enforce browser fonts easily instead of letting websites use their own fonts.
-                  Easily toggle between browser fonts and website fonts by clicking on addon toolbar
-                  icon or its keyboard shortcut (Alt-Comma).
-                '';
-                platforms = platforms.all;
-              };
-            })
-
             # Rycee NUR: https://nur.nix-community.org/repos/rycee/
-            user-agent-string-switcher
             # bypass-paywalls-clean
             redirector
-            rust-search-extension
             bitwarden
             ublock-origin
             multi-account-containers

@@ -239,21 +239,17 @@ namedScratchpads :: [NamedScratchpad]
 namedScratchpads =
   [ NS "file-manager" "alacritty -t ns-file-manager -e ranger" (title =? "ns-file-manager") centerFloatMedium,
     NS "terminal" "alacritty -t ns-terminal -e tmux new-session -A -s scratch" (title =? "ns-terminal") centerFloatBig,
-    NS "emacs" spawnEmacs (title =? "ns-emacs") centerFloatBig,
-    nsOpenDoc "Documents/vi-vim-tutorial.pdf" centerFloatBig,
-    nsOpenDoc "Documents/Vim cheatsheet.pdf" centerFloatBig
+    NS "emacs" spawnEmacs (title =? "ns-emacs") centerFloatBig
   ]
   where
     spawnEmacs = "emacsclient -a -n -c --frame-parameters='(quote (name . \"ns-emacs\"))'"
 
-namedScratchpadKeymaps c =
+namedScratchpadKeymaps c@(XConfig {XMonad.modMask = modm})  =
   mkKeymap
     c
     [ ("M-s f", namedScratchpadAction namedScratchpads "file-manager"),
       ("M-s t", namedScratchpadAction namedScratchpads "terminal"),
-      ("M-s e", namedScratchpadAction namedScratchpads "emacs"),
-      ("M-s 1", namedScratchpadAction namedScratchpads "~/Documents/Vim cheatsheet.pdf"),
-      ("M-s 2", namedScratchpadAction namedScratchpads "~/Documents/vi-vim-tutorial.pdf")
+      ("M-s e", namedScratchpadAction namedScratchpads "emacs")
     ]
 
 exclusiveScratchPads :: [ExclusiveScratchpad]
@@ -466,7 +462,9 @@ myKeyBindings conf@(XConfig {XMonad.modMask = modm}) =
       ((modm, xK_g), sendMessage ToggleLayout), -- toggle all spacing
 
       -- Rotate through the available layout algorithms
-      ((modm, xK_space), sendMessage NextLayout),
+      -- ((modm, xK_space), sendMessage NextLayout),
+      ((modm, xK_space), namedScratchpadAction namedScratchpads "terminal"),
+
       --  Reset the layouts on the current workspace to default
       ((modm .|. shiftMask, xK_space), setLayout $ XMonad.layoutHook conf),
       -- Resize viewed windows to the correct size

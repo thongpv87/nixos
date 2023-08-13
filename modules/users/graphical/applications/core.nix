@@ -19,9 +19,6 @@ in {
         okular
         xorg.xinput
 
-        thunderbird
-        # jdpkgs.rstudioWrapper
-        # jdpkgs.texstudioWrapper
         microsoft-edge
 
         # updated version with wayland/grim backend
@@ -31,11 +28,6 @@ in {
         # Password manager
         bitwarden
         jdpkgs.authy
-
-        # Messaging
-        slack
-        discord
-        element-desktop
 
         # Reading
         calibre
@@ -52,19 +44,9 @@ in {
         pasystray
 
         # music
-        cider
+        rhythmbox
 
         # kdeconnect
       ] ++ lib.optional systemCfg.networking.wifi.enable pkgs.iwgtk;
-
-    xdg.configFile = {
-      "discord/settings.json" = {
-        text = ''
-          {
-            "SKIP_HOST_UPDATE": true
-          }
-        '';
-      };
-    };
   };
 }

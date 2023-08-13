@@ -187,42 +187,7 @@ in {
     xdg = {
       enable = true;
       mime.enable = true;
-      mimeApps = {
-        enable = true;
-        # TODO: Create a function for generating these better
-        associations.added = {
-          "x-scheme-handler/terminal" = "foot.desktop";
-          "x-scheme-handler/file" = "org.kde.dolphin.desktop";
-          "x-directory/normal" = "org.kde.dolphin.desktop";
-        };
-        defaultApplications = {
-          "application/pdf" = "okularApplication_pdf.desktop";
-          "application/x-shellscript" = "nvim.desktop";
-          "application/x-perl" = "nvim.desktop";
-          "application/json" = "nvim.desktop";
-          "text/x-readme" = "nvim.desktop";
-          "text/plain" = "nvim.desktop";
-          "text/markdown" = "nvim.desktop";
-          "text/x-csrc" = "nvim.desktop";
-          "text/x-chdr" = "nvim.desktop";
-          "text/x-python" = "nvim.desktop";
-          "text/x-tex" = "texstudio.desktop";
-          "text/x-makefile" = "nvim.desktop";
-          "inode/directory" = "org.kde.dolphin.desktop";
-          "x-directory/normal" = "org.kde.dolphin.desktop";
-          "x-scheme-handler/file" = "org.kde.dolphin.desktop";
-          "x-scheme-handler/terminal" = "foot.desktop";
-          "image/bmp" = "vimiv.desktop";
-          "image/gif" = "vimiv.desktop";
-          "image/jpeg" = "vimiv.desktop";
-          "image/jp2" = "vimiv.desktop";
-          "image/jpeg2000" = "vimiv.desktop";
-          "image/jpx" = "vimiv.desktop";
-          "image/png" = "vimiv.desktop";
-          "image/svg" = "vimiv.desktop";
-          "image/tiff" = "vimiv.desktop";
-        };
-      };
+      mimeApps = { enable = true; };
     };
   };
 

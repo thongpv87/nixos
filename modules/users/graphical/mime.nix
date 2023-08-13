@@ -4,8 +4,8 @@ let
   cfg = config.thongpv87.graphical.mime;
   textEditor = [ "nvim.desktop" "emacsclient.desktop" "emacs.desktop" ];
   browser = [ "firefox.desktop" ];
-  fileManager = [ "org.kde.dolphin.desktop" ];
-  musicPlayer = [ "org.kde.elisa.desktop" ];
+  fileManager = [ "org.gnome.Nautilus.desktop" "org.kde.dolphin.desktop" ];
+  musicPlayer = [ "rhythmbox.desktop" "org.kde.elisa.desktop" ];
   videoPlayer = [ "vlc.desktop" ];
   imageViewer = [ "vimv.desktop" "org.kde.gwenview.desktop" ];
   documentViewer = [ "org.kde.okular.desktop" ];
@@ -14,11 +14,11 @@ let
   terminal = [ "alacritty.desktop" ];
 in {
   options = {
-    thongpv87.graphical.mime = { enable = mkOption { default = false; }; };
+    thongpv87.graphical.mime = { enable = mkOption { default = true; }; };
   };
 
   config = mkIf (config.thongpv87.graphical.enable && cfg.enable) (mkMerge [{
-    home.packages = with pkgs; [ vlc alacritty okular ];
+    home.packages = with pkgs; [ vlc alacritty okular rhythmbox ];
 
     xdg = {
       mime.enable = true;

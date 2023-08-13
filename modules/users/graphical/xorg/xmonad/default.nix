@@ -38,7 +38,7 @@ in {
         gnome.gnome-tweaks
         gnome.nautilus
         okular
-        dolphin
+        rhythmbox
         pavucontrol
         xmobar
       ];

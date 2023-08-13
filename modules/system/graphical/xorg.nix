@@ -15,6 +15,8 @@ in {
       enable = true;
       libinput = { enable = true; };
       displayManager.gdm.enable = true;
+      windowManager.xmonad.enable = true;
+      desktopManager.plasma5.enable = true;
     };
   };
 }

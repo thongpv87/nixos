@@ -407,6 +407,10 @@
           laptop.enable = true;
           secrets.identityPaths = [ "" ];
           networking.interfaces = [ "wlan0" ];
+          graphical.desktop-env = {
+            kde.enable = false;
+            xmonad.enable = true;
+          };
 
           system.hardware.thinkpad-x1e2 = {
             enable = true;

@@ -93,7 +93,7 @@ in {
 
     services = {
       random-background = {
-        enable = false;
+        enable = true;
         enableXinerama = true;
         display = "fill";
         imageDirectory = "%h/Pictures/Wallpapers";
