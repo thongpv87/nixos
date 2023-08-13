@@ -576,7 +576,7 @@
       nixosConfigurations = {
         thinkpad = host.mkHost {
           name = "thinkpad";
-          kernelPackage = lib.mkForce pkgs.linuxPackages;
+          kernelPackage = lib.mkForce pkgs.linuxPackages_latest;
           initrdMods = [
             "xhci_pci"
             "nvme"
