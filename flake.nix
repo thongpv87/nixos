@@ -415,7 +415,7 @@
           system.hardware.thinkpad-x1e2 = {
             enable = true;
             fancontrol = "manual";
-            undervolt = false;
+            undervolt = true;
             # cpuScaling = "acpi_cpufreq";
             cpuScaling = "intel_cpufreq";
             xorg = {

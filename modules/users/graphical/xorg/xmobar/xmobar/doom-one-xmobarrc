@@ -46,10 +46,10 @@ Config { font            = "Ubuntu Bold 9"
                     , Run Cpu ["-t", "<fn=2>\xf108</fn>  cpu: (<total>%)","-H","50","--high","red"] 20
                         -- Ram used number and percent
                     , Run Memory ["-t", "<fn=2>\xf233</fn>  mem: <used>GB (<usedratio>%)", "--", "--scale", "1024"] 20
-                        -- Echos a "Sound" icon in front of the volume status.
-                    , Run Com "echo" ["<fn=2>\xf026</fn>"] "sound" 3600
                         -- Volume
-                    , Run Alsa "default" "Master" ["-t", "<fn=1><status></fn> <volume>%", "--", "-o", "", "-O", "" ,"-c", "#ff6188", "-C", "#AB9DF2", "-h", "", "-m", "", "-l", "" ]
+                    , Run Alsa "default" "Master" ["-t", "<fn=1><status></fn> vol: <volume>%", "--", "-o", "<fn=2></fn>", "-O", "" ,"-c", "#ff6188", "-C", "#AB9DF2", "-H", "60", "-L", "25", "-h", "<fn=2></fn>", "-m", "<fn=2></fn>", "-l", "<fn=2></fn>" ]
+                        -- Brightness
+                    , Run Brightness ["-t", "<fn=1></fn> bri: <percent>%", "--", "-D", "intel_backlight"] 60
                         -- Battery
                     , Run BatteryP ["BAT0"] ["-t", "<acstatus> <watts>W (<left>%)"
                                    ,"-L", "15", "-H", "50"
@@ -58,7 +58,7 @@ Config { font            = "Ubuntu Bold 9"
 
                     ] 360
                         -- Time and date
-                    , Run Date "<fn=2>\xf017</fn>  %b %d %Y - (%H:%M) " "date" 60
+                    , Run Date "<fn=2>\xf017</fn> %a %d %b - %H:%M " "date" 60
                         -- Script that dynamically adjusts xmobar padding depending on number of trayer icons.
                     , Run Com "/home/thongpv87/.xmonad/xmobar/trayer-padding-icon.sh" [] "trayerpad" 60
                         -- Prints out the left side items such as workspaces, layout, etc.
@@ -66,7 +66,7 @@ Config { font            = "Ubuntu Bold 9"
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = " %XMonadLog% }{<box type=Bottom width=2 mb=2 color=#ecbe7b><fc=#ecbe7b><action=`alacritty -e htop`>%cpu%</action></fc></box>    <box type=Bottom width=2 mb=2 color=#ff6c6b><fc=#ff6c6b><action=`alacritty -e htop`>%memory%</action></fc></box>       <box type=Bottom width=2 mb=2 color=#98be65><fc=#98be65>%uparrow%  %uptime%</fc></box>    <box type=Bottom width=2 mb=2 color=#c678dd><fc=#c678dd>%sound%  <action=`pavucontrol`>%alsa:default:Master%</action></fc></box>   <box type=Bottom width=2 mb=2 color=#51afef><fc=#51afef>%network% %wlan0wi% %wlan0%</fc></box>   <box type=Bottom width=2 mb=2 color=#da8548><fc=#da8548>%battery%</fc></box>    <box type=Bottom width=2 mb=2 color=#46d9ff><fc=#46d9ff><action=`emacsclient -c -a 'emacs' --eval '(doom/window-maximize-buffer(dt/year-calendar))'`>%date%</action></fc></box> %trayerpad%"
+       , template = " %XMonadLog% }{<box type=Bottom width=2 mb=2 color=#ecbe7b><fc=#ecbe7b><action=`alacritty -e htop`>%cpu%</action></fc></box>   <box type=Bottom width=2 mb=2 color=#ff6c6b><fc=#ff6c6b><action=`alacritty -e htop`>%memory%</action></fc></box>   <box type=Bottom width=2 mb=2 color=#98be65><fc=#98be65>%uparrow%  %uptime%</fc></box>   <box type=Bottom width=2 mb=2 color=#c678dd><fc=#c678dd><action=`pavucontrol`>%alsa:default:Master%</action></fc></box>   <box type=Bottom width=2 mb=2 color=#ffd866><fc=#ffd866>%bright%</fc></box>   <box type=Bottom width=2 mb=2 color=#51afef><fc=#51afef>%network% %wlan0wi% %wlan0%</fc></box>   <box type=Bottom width=2 mb=2 color=#da8548><fc=#da8548>%battery%</fc></box>   <box type=Bottom width=2 mb=2 color=#46d9ff><fc=#46d9ff><action=`emacsclient -c -a 'emacs' --eval '(doom/window-maximize-buffer(dt/year-calendar))'`>%date%</action></fc></box> %trayerpad%"
        }
        -- network battery date olume
        -- <box type=Bottom width=2 mb=2 color=#98be65><fc=#98be65>%messages%  <action=`alacritty -e nvim .log/notify.log`>%notify-log%</action></fc></box>
