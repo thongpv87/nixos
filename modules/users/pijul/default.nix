@@ -18,13 +18,13 @@ in {
     fullName = mkOption {
       description = "Full name for pijul";
       type = types.str;
-      default = "Jordan Isaacs";
+      default = "Thong Pham";
     };
 
     email = mkOption {
       description = "Email for pijul";
       type = types.str;
-      default = "mail@jdisaacs.com";
+      default = "thongpv87@gmail.com";
     };
 
     secretKey = mkOption {

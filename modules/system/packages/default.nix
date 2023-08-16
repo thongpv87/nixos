@@ -8,7 +8,7 @@
   };
 
   services = {
-    teamviewer.enable = false;
+    teamviewer.enable = true;
     usbmuxd.enable = true;
   };
 
