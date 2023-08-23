@@ -94,26 +94,6 @@ in {
             libva
           ];
         };
-
-        nvidia = {
-          powerManagement = {
-            enable = true;
-            finegrained = true;
-          };
-          nvidiaPersistenced = true;
-          modesetting.enable = true;
-          forceFullCompositionPipeline = true;
-          prime = {
-            offload = {
-              enable = true;
-              enableOffloadCmd = true;
-            };
-            reverseSync.enable = true;
-
-            intelBusId = "PCI:0:2:0";
-            nvidiaBusId = "PCI:1:0:0";
-          };
-        };
       };
 
       services = {
