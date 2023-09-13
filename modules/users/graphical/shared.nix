@@ -86,7 +86,7 @@ in {
 
     systemd.user.sessionVariables = {
       # So graphical services are themed (eg trays)
-      QT_QPA_PLATFORMTHEME = "pop";
+      QT_QPA_PLATFORMTHEME = mkForce "pop";
       PATH = builtins.concatStringsSep ":" [
         # Following two needed for themes from trays
         # "${pkgs.libsForQt5.qtstyleplugin-kvantum}/bin"

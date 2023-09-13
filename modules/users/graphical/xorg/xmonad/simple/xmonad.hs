@@ -41,6 +41,7 @@ import XMonad.Hooks.DynamicLog
     xmobarRaw,
     xmobarStrip,
   )
+import XMonad.Hooks.DynamicIcons
 import XMonad.Hooks.EwmhDesktops (ewmh)
 import XMonad.Hooks.ManageDocks (ToggleStruts (..), avoidStruts, manageDocks)
 import XMonad.Hooks.ManageHelpers
@@ -322,7 +323,7 @@ statusbarPP =
         ppHidden = gray . wsSpacing,
         ppHiddenNoWindows = const "", -- gray . wsSpacing,
         ppUrgent = red . wrap (yellow "!") (yellow "!"),
-        ppOrder = \[ws, l, _, wins] -> [ws, l],
+        ppOrder = \[ws, l, t, wins] -> [ws, l,t],
         ppExtras = [logTitles formatFocused formatUnfocused]
       }
   where
@@ -344,6 +345,13 @@ statusbarPP =
     lowWhite = xmobarColor "#bbbbbb" ""
     wsSpacing = wrap "" " "
 
+myIcons :: Query [String]
+myIcons = composeAll
+  [ className =? "Alacritty" --> appIcon "\xea85"
+  , className =? "emacs" --> appIcon "\xe632"
+  , className =? "firefox" --> appIcon "\xf269"
+  , className =? "Spotify" <||> className =? "spotify" --> appIcon "阮"
+  ]
 
 
 myManageHook :: ManageHook

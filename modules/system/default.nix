@@ -26,5 +26,6 @@
     (import ./hardware { inherit inputs patchedPkgs; })
     ./users
     ./fs
+    ./virtualisation
   ];
 }

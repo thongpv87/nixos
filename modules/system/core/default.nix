@@ -101,7 +101,7 @@ in {
         zsh
 
         # Files
-        exa
+        eza
         unzip
         lsof
 

@@ -162,48 +162,6 @@
               ipAddr = "5.161.103.90";
             }];
           };
-
-          framework = let wgsecret = secrets.wireguard.framework;
-          in {
-            wgAddrV4 = "10.55.1.2";
-            interfaceMask = 16;
-            listenPort = 51820;
-
-            privateKeyPath = "/etc/wireguard/private_key";
-            privateKeyAge = wgsecret.secret.file;
-            publicKey = wgsecret.publicKey;
-            dns = "client";
-
-            tags = [
-              {
-                name = "home";
-                ipAddr = "172.26.40.247";
-              }
-              { name = "net"; }
-            ];
-          };
-
-          desktop = let wgsecret = secrets.wireguard.desktop;
-          in {
-            wgAddrV4 = "10.55.0.1";
-            interfaceMask = 16;
-            listenPort = 51820;
-            dns = "client";
-
-            firewall = { allowedTCPPorts = [ 8080 ]; };
-
-            privateKeyPath = "/etc/wireguard/private_key";
-            privateKeyAge = wgsecret.secret.file;
-            publicKey = wgsecret.publicKey;
-
-            tags = [
-              {
-                name = "home";
-                ipAddr = "172.26.26.90";
-              }
-              { name = "net"; }
-            ];
-          };
         };
       };
 
@@ -234,30 +192,6 @@
         networking = { firewall.enable = true; };
         impermanence.enable = true;
       };
-
-      gondolaConfig = utils.recursiveMerge [
-        defaultServerConfig
-        {
-          users.rootPassword = secrets.passwords.gondola;
-          isQemuGuest = true;
-          boot.grubDevice = "/dev/vda";
-          fs.hostId = "fe120267";
-          secrets.identityPaths = [ secrets.age.gondola.privateKeyPath ];
-          networking = {
-            static = {
-              enable = true;
-              interface = "ens3";
-              ipv6.addr = "2001:550:5a00:550b::1/64";
-              ipv4.addr = "38.45.64.210/32";
-              ipv4.gateway = "38.45.64.1";
-            };
-          };
-          ssh = {
-            firewall = "world";
-            hostKeyAge = secrets.ssh.host.gondola.secret.file;
-          };
-        }
-      ];
 
       chairliftConfig = utils.recursiveMerge [
         defaultServerConfig
@@ -415,7 +349,7 @@
           system.hardware.thinkpad-x1e2 = {
             enable = true;
             fancontrol = "manual";
-            undervolt = true;
+            undervolt = false;
             # cpuScaling = "acpi_cpufreq";
             cpuScaling = "intel_cpufreq";
             xorg = {

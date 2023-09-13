@@ -64,6 +64,12 @@ in {
 
       # music
       playerctl
+
+      discord
+      upwork
+      telegram-desktop
+      google-cloud-sdk
+      openvpn
     ];
 
     programs.mpv = {

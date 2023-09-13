@@ -46,16 +46,16 @@ in {
     fsConfig = mkMerge [
       (mkIf (cfg.type == "ext4") {
         fileSystems."/" = {
-          device = "/dev/disk/by-label/EXT4_ROOT";
+          device = "/dev/disk/by-label/ROOT";
           fsType = "ext4";
         };
 
         fileSystems."/boot" = {
-          device = "/dev/disk/by-label/EXT4_BOOT";
+          device = "/dev/disk/by-label/BOOT";
           fsType = "vfat";
         };
 
-        swapDevices = [{ device = "/dev/disk/by-label/EXT4_SWAP"; }];
+        swapDevices = [{ device = "/dev/disk/by-label/SWAP"; }];
       })
 
       (mkIf (cfg.type == "encrypted-efi") {
