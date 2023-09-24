@@ -4,6 +4,8 @@ let
   cfg = config.thongpv87.terminal.tmux;
   shellCmd = if cfg.shell == "zsh" then
     "${pkgs.zsh}/bin/zsh"
+  else if cfg.shell == "nu" then
+    "${pkgs.nushell}/bin/nu"
   else
     "${pkgs.bashInteractive}/bin/bash";
 in {
@@ -17,7 +19,7 @@ in {
       };
 
       shell = mkOption {
-        type = with types; enum [ "bash" "zsh" ];
+        type = with types; enum [ "bash" "zsh" "nu" ];
         default = "zsh";
       };
     };

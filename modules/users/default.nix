@@ -5,6 +5,7 @@
     ./git
     ./gpg
     ./zsh
+    ./nushell
     ./ssh
     ./office365
     ./wine

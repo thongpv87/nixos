@@ -337,6 +337,7 @@
         {
           boot.type = "efi";
           fs = { type = "ext4"; };
+          adhoc.enable = true;
 
           laptop.enable = true;
           secrets.identityPaths = [ "" ];

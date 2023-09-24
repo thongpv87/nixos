@@ -51,6 +51,12 @@ in {
   };
 
   config = mkMerge [
+    {
+      services.openssh = {
+        enable = true;
+        settings.GatewayPorts = "yes";
+      };
+    }
     (mkIf (cfg.type == "client") {
       # programs.ssh.startAgent = true;
     })

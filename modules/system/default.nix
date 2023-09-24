@@ -4,6 +4,7 @@
   # some are modules that are reliant on non nixos modules.
   # Thus imported at top level in lib/mkhost
   imports = [
+    ./adhoc
     ./connectivity
     ./boot
     ./extraContainer

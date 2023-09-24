@@ -240,6 +240,7 @@ namedScratchpads :: [NamedScratchpad]
 namedScratchpads =
   [ NS "file-manager" "alacritty -t ns-file-manager -e ranger" (title =? "ns-file-manager") centerFloatMedium,
     NS "terminal" "alacritty -t ns-terminal -e tmux new-session -A -s scratch" (title =? "ns-terminal") centerFloatBig,
+    NS "chatgpt" "google-chrome-stable chromium-browser %U --start-maximized --app=https://chat.openai.com" (appName =? "chat.openai.com") centerFloatBig,
     NS "emacs" spawnEmacs (title =? "ns-emacs") centerFloatBig
   ]
   where
@@ -250,6 +251,7 @@ namedScratchpadKeymaps c@(XConfig {XMonad.modMask = modm})  =
     c
     [ ("M-s f", namedScratchpadAction namedScratchpads "file-manager"),
       ("M-s t", namedScratchpadAction namedScratchpads "terminal"),
+      ("M-s g", namedScratchpadAction namedScratchpads "chatgpt"),
       ("M-s e", namedScratchpadAction namedScratchpads "emacs")
     ]
 
