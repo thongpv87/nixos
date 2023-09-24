@@ -25,8 +25,8 @@ $env.PROMPT_COMMAND_RIGHT = {|| create_right_prompt }
 # The prompt indicators are environmental variables that represent
 # the state of the prompt
 $env.PROMPT_INDICATOR = "〉"
-$env.PROMPT_INDICATOR_VI_INSERT = ": "
-$env.PROMPT_INDICATOR_VI_NORMAL = "〉"
+$env.PROMPT_INDICATOR_VI_INSERT = "〉 "
+$env.PROMPT_INDICATOR_VI_NORMAL = " "
 $env.PROMPT_MULTILINE_INDICATOR = "::: "
 
 # Specifies how environment variables are:
@@ -55,6 +55,25 @@ $env.NU_LIB_DIRS = [
 $env.NU_PLUGIN_DIRS = [
   ($nu.config-path | path dirname | path join 'plugins')
 ]
+
+# completion
+let fish_completer = {|spans|
+    fish --command $'complete "--do-complete=($spans | str join " ")"'
+    | $"value(char tab)description(char newline)" + $in
+    | from tsv --flexible --no-infer
+}
+
+let carapace_completer = {|spans: list<string>|
+    carapace $spans.0 nushell $spans
+    | from json
+    | if ($in | default [] | where value =~ '^-.*ERR$' | is-empty) { $in } else { null }
+}
+
+$env.config.completions.external = {
+    enable: true
+    max_results: 100
+    completer: $fish_completer
+}
 
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
