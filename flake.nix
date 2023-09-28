@@ -119,6 +119,7 @@
         config = {
           permittedInsecurePackages = [
             "electron-9.4.4"
+            "electron-11.5.0"
             #"qtwebkit-5.212.0-alpha4"
           ];
           allowUnfree = true;
@@ -490,6 +491,7 @@
               allowedSignerFile = builtins.toString authorizedKeyFiles;
             };
             zsh.enable = true;
+            nushell.enable = true;
             ssh.enable = true;
             weechat.enable = false;
             office365 = {

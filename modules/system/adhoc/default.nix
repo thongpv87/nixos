@@ -8,7 +8,13 @@ let
 in {
   options.thongpv87.adhoc = { enable = mkOption { default = false; }; };
   config = {
-    environment.systemPackages = [ pkgs.clockify apploye ];
+    environment.systemPackages = [
+      pkgs.clockify
+      apploye
+      pkgs.taskwarrior
+      pkgs.timewarrior
+      pkgs.taskwarrior-tui
+    ];
 
     services.tailscale.enable = true;
   };
