@@ -13,10 +13,7 @@ in {
   };
 
   config = mkIf (cfg.enable) {
-    home.sessionVariables = {
-      MANPAGER = "sh -c 'col -bx | bat -l man -p'";
-      EDITOR = "vim";
-    };
+    home.sessionVariables = { EDITOR = "vim"; };
 
     xdg.enable = true;
 

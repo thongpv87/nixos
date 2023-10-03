@@ -138,15 +138,7 @@ in {
 
       "oh-my-zsh" = {
         enable = true;
-        plugins = [
-          "git"
-          "sudo"
-          "gitignore"
-          "cp"
-          "docker"
-          "safe-paste"
-          "colored-man-pages"
-        ];
+        plugins = [ "git" "sudo" "gitignore" "cp" "docker" "safe-paste" ];
       };
     };
   });
