@@ -15,6 +15,8 @@ in {
       pkgs.taskwarrior
       pkgs.timewarrior
       pkgs.taskwarrior-tui
+      pkgs.elixir_1_15
+      pkgs.insomnia
 
       pkgs.shellcheck
       pkgs.nodePackages.bash-language-server
@@ -28,8 +30,18 @@ in {
         local all       all     trust
         host  all       all     127.0.0.1       255.255.255.255     trust
       '';
+      settings = { shared_preload_libraries = "timescaledb"; };
     };
 
     services.tailscale.enable = true;
+    services.headscale.enable = true;
+
+    # services.pixiecore = {
+    #   enable = true;
+    #   mode = "quick";
+    #   quick = "fedora";
+    #   dhcpNoBind = true;
+    #   openFirewall = true;
+    # };
   };
 }

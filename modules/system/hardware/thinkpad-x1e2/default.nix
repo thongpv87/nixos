@@ -41,7 +41,7 @@ in {
         #   systemd-boot.configurationLimit = 10;
         #   efi.canTouchEfiVariables = true;
         # };
-        kernel.sysctl = { "vm.swappiness" = 0; };
+        kernel.sysctl = { "vm.swappiness" = 30; };
         kernelPackages = mkDefault pkgs.linuxPackages;
         initrd.availableKernelModules = [
           "xhci_pci"
@@ -77,6 +77,7 @@ in {
             prefixLength = 24;
           }];
         };
+        defaultGateway = "192.168.1.1";
         networkmanager = {
           enable = true;
           wifi = {
